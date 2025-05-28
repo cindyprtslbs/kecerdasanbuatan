@@ -11,8 +11,8 @@
         <!-- Welcome Screen -->
         <div id="welcome-screen" class="screen active">
             <div class="container">
-                <div class="header">
-                    <div class="icon-container">
+                <div class="welcome-header">
+                    <div class="app-logo">
                         <svg class="stethoscope-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 2a2 2 0 0 0-2 2v6.5a.5.5 0 0 1-.5.5.5.5 0 0 1-.5-.5V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6.5a.5.5 0 0 1-.5.5.5.5 0 0 1-.5-.5V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6.5a6.5 6.5 0 0 0 13 0V4a2 2 0 0 0-2-2Z"/>
                             <circle cx="20" cy="14" r="2"/>
@@ -20,54 +20,62 @@
                         </svg>
                     </div>
                     <h1>Sistem Diagnosis Penyakit Pernapasan</h1>
-                    <span class="subtitle">Sistem diagnosis penyakit pernapasan berbasis web yang membantu Anda mengenali kemungkinan penyakit berdasarkan gejala yang Anda alami secara cepat dan mudah</span>
+                    <p class="welcome-subtitle">Sistem diagnosis penyakit pernapasan berbasis web yang membantu Anda mengenali kemungkinan penyakit berdasarkan gejala yang Anda alami secara cepat dan mudah</p>
                 </div>
 
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <svg class="feature-icon lungs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2C8 2 5 5 5 9v6c0 1 1 2 2 2h10c1 0 2-1 2-2V9c0-4-3-7-7-7Z"/>
-                            <path d="M12 2v15"/>
-                        </svg>
-                        <h3>10 Penyakit</h3>
-                        <p>Mendiagnosis berbagai penyakit pernapasan dari flu hingga kanker paru</p>
-                    </div>
-                    <div class="feature-card">
-                        <svg class="feature-icon heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                        </svg>
-                        <h3>Akurat</h3>
-                        <p>Memberikan hasil diagnosis berdasarkan data medis dan gejala yang Anda alami</p>
-                    </div>
-                    <div class="feature-card">
-                        <svg class="feature-icon warning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                        <h3>Konsultasi</h3>
-                        <p>Hasil diagnosis sebaiknya dikonsultasikan dengan dokter profesional</p>
+                <div class="features-section">
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon-wrapper diseases">
+                                <svg class="feature-icon diseases" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2C8 2 5 5 5 9v6c0 1 1 2 2 2h10c1 0 2-1 2-2V9c0-4-3-7-7-7Z"/>
+                                    <path d="M12 2v15"/>
+                                </svg>
+                            </div>
+                            <h3>10 Penyakit</h3>
+                            <p>Mendiagnosis berbagai penyakit pernapasan dari flu hingga kanker paru dengan akurasi tinggi</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon-wrapper accuracy">
+                                <svg class="feature-icon accuracy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
+                            </div>
+                            <h3>Akurat & Terpercaya</h3>
+                            <p>Memberikan hasil diagnosis berdasarkan data medis dan algoritma yang telah teruji</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon-wrapper consultation">
+                                <svg class="feature-icon consultation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </div>
+                            <h3>Konsultasi Lanjutan</h3>
+                            <p>Hasil diagnosis sebaiknya dikonsultasikan dengan dokter profesional untuk penanganan yang tepat</p>
+                        </div>
                     </div>
                 </div>
 
                 <div class="main-card">
-                    <h2>Mulai Diagnosis</h2>
+                    <h2>Mulai Pemeriksaan</h2>
                     <p class="card-description">
                         Sistem akan menanyakan beberapa gejala untuk membantu menentukan diagnosis yang tepat. 
                         Jawab dengan jujur sesuai kondisi Anda saat ini.
                     </p>
-                    <div class="alert">
-                        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <div class="medical-disclaimer">
+                        <svg class="disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                             <line x1="12" y1="9" x2="12" y2="13"/>
                             <line x1="12" y1="17" x2="12.01" y2="17"/>
                         </svg>
-                        <div>
+                        <div class="disclaimer-content">
                             <strong>Penting:</strong> Diagnosis ini adalah perkiraan dan bukan pengganti diagnosis medis
                             profesional. Segera konsultasikan dengan dokter untuk diagnosis dan penanganan yang akurat.
                         </div>
                     </div>
-                    <button id="start-diagnosis" class="btn-primary">Mulai Diagnosis</button>
+                    <button id="start-diagnosis" class="btn-start">Mulai Pemeriksaan</button>
                 </div>
             </div>
         </div>
@@ -75,35 +83,39 @@
         <!-- Diagnosis Screen -->
         <div id="diagnosis-screen" class="screen">
             <div class="container">
-                <div class="diagnosis-header">
-                    <div class="progress-info">
-                        <h2>Pemeriksaan Gejala</h2>
-                        <span id="question-counter">Pertanyaan 0</span>
+                <div class="diagnosis-container">
+                    <div class="diagnosis-header">
+                        <div class="progress-info">
+                            <h2>Pemeriksaan Gejala</h2>
+                            <span id="question-counter" class="question-counter">Pertanyaan 0</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div id="progress-fill" class="progress-fill"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="progress-bar">
-                        <div id="progress-fill" class="progress-fill"></div>
-                    </div>
-                </div>
 
-                <div id="question-card" class="question-card">
-                    <h3 id="current-question">Loading...</h3>
-                    <p>Pilih jawaban yang sesuai dengan kondisi Anda saat ini</p>
-                    <div class="answer-buttons">
-                        <button id="answer-yes" class="btn-yes">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22,4 12,14.01 9,11.01"/>
-                            </svg>
-                            Ya
-                        </button>
-                        <button id="answer-no" class="btn-no">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="15" y1="9" x2="9" y2="15"/>
-                                <line x1="9" y1="9" x2="15" y2="15"/>
-                            </svg>
-                            Tidak
-                        </button>
+                    <div id="question-card" class="question-card">
+                        <h3 id="current-question">Loading...</h3>
+                        <p class="question-description">Pilih jawaban yang sesuai dengan kondisi Anda saat ini</p>
+                        <div class="answer-buttons">
+                            <button id="answer-yes" class="btn-answer btn-yes">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22,4 12,14.01 9,11.01"/>
+                                </svg>
+                                Ya
+                            </button>
+                            <button id="answer-no" class="btn-answer btn-no">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                                Tidak
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,19 +124,21 @@
         <!-- Result Screen -->
         <div id="result-screen" class="screen">
             <div class="container">
-                <div class="result-card">
-                    <div class="result-header">
-                        <div id="result-icon" class="result-icon-container">
-                            <!-- Icon will be inserted here -->
+                <div class="result-container">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <div id="result-icon" class="result-icon-container">
+                                <!-- Icon will be inserted here -->
+                            </div>
+                            <h2>Hasil Pemeriksaan</h2>
                         </div>
-                        <h2>Hasil Diagnosis</h2>
-                    </div>
-                    <div id="result-content" class="result-content">
-                        <!-- Result content will be inserted here -->
-                    </div>
-                    <div class="result-actions">
-                        <button id="reset-diagnosis" class="btn-outline">Diagnosis Ulang</button>
-                        <button id="consult-doctor" class="btn-primary">Konsultasi Dokter</button>
+                        <div id="result-content" class="result-content">
+                            <!-- Result content will be inserted here -->
+                        </div>
+                        <div class="result-actions">
+                            <button id="reset-diagnosis" class="btn-outline">Periksa Ulang</button>
+                            <button id="consult-doctor" class="btn-primary">Konsultasi Dokter</button>
+                        </div>
                     </div>
                 </div>
             </div>
