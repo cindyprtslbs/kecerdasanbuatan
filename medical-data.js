@@ -1,7 +1,7 @@
 // Daftar semua gejala yang mungkin, dengan format pertanyaan
 const SYMPTOM_QUESTIONS = {
     "batuk_berdarah": "Apakah Anda batuk berdarah?",
-    "batuk_terus_menerus_disertai_atau_bercak_darah": "Apakah batuk Anda terus-menerus disertai atau berbercak darah?",
+    "batuk_terus_menerus_disertai_bercak_darah": "Apakah batuk Anda terus-menerus disertai bercak darah?",
     "sesak_napas": "Apakah Anda mengalami sesak napas?",
     "sesak_napas_covid": "Apakah Anda mengalami sesak napas?",
     "sesak_napas_pneumonia": "Apakah Anda mengalami sesak napas?",
@@ -55,23 +55,33 @@ const SYMPTOM_QUESTIONS = {
     "napas_berbunyi": "Apakah napas Anda berbunyi (misalnya saat bernapas)?"
 };
 
-// Definisikan aturan dalam format dictionary
+// Definisi aturan dalam format dictionary
 const RULES = {
-    "Kanker Paru": [
+    "Kanker Paru-Paru": [
         [
             "batuk_berdarah",
-            "batuk_terus_menerus_disertai_atau_bercak_darah",
+            "batuk_terus_menerus_disertai_bercak_darah",
             "sesak_napas",
             "nyeri_dada",
             "kehilangan_berat_badan",
             "lemas"
         ]
     ],
-    "Emboli Paru": [
-        ["sesak_napas_mendadak", "nyeri_dada_saat_bernapas", "batuk", "pingsan"]
+    "Emboli Paru-Paru": [
+        [
+            "sesak_napas_mendadak", 
+            "nyeri_dada_saat_bernapas", 
+            "batuk", "pingsan"
+        ]
     ],
     "Tuberkulosis (TBC)": [
-        ["batuk_berdahak_dan_terus_menerus", "kehilangan_berat_badan_drastis", "keringat_malam", "demam", "lemas_tbc"]
+        [
+            "batuk_berdahak_dan_terus_menerus", 
+            "kehilangan_berat_badan_drastis", 
+            "keringat_malam", 
+            "demam", 
+            "lemas_tbc"
+        ]
     ],
     "COVID-19": [
         [
@@ -114,13 +124,30 @@ const RULES = {
         ]
     ],
     "Emfisema": [
-        ["mengi", "nyeri_dada_emfisema", "sesak_napas_emfisema", "batuk_emfisema"]
+        [
+            "mengi", 
+            "nyeri_dada_emfisema", 
+            "sesak_napas_emfisema", 
+            "batuk_emfisema"
+        ]
     ],
     "Asma": [
-        ["napas_berbunyi", "sesak_napas_asma", "batuk_asma", "nyeri_dada_asma", "mengi_asma"]
+        [
+            "napas_berbunyi", 
+            "sesak_napas_asma", 
+            "batuk_asma", 
+            "nyeri_dada_asma", 
+            "mengi_asma"
+        ]
     ],
     "Flu": [
-        ["kehilangan_penciuman_flu", "demam_flu", "batuk_flu", "sakit_tenggorokan_flu", "nyeri_otot_flu"]
+        [
+            "kehilangan_penciuman_flu", 
+            "demam_flu", 
+            "batuk_flu", 
+            "sakit_tenggorokan_flu", 
+            "nyeri_otot_flu"
+        ]
     ]
 };
 

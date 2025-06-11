@@ -614,3 +614,42 @@
             outline: 2px solid #3b82f6;
             outline-offset: 2px;
         }
+
+        /* Add these new styles to your existing CSS */
+
+.diagnosis-check-info {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #0ea5e9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.diagnosis-check-label {
+    color: #0369a1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.current-diagnosis-name {
+    color: #0c4a6e;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .diagnosis-check-info {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .current-diagnosis-name {
+        font-size: 1.125rem;
+    }
+}

@@ -8,6 +8,7 @@ class DiagnosisApp {
         this.diagnosis = null;
         this.questionsAsked = 0;
         this.resolveSymptom = null;
+        this.currentDiagnosisBeingChecked = null;
 
         this.initializeElements();
         this.bindEvents();
@@ -26,6 +27,7 @@ class DiagnosisApp {
         this.questionCounter = document.getElementById('question-counter');
         this.progressFill = document.getElementById('progress-fill');
         this.currentQuestionElement = document.getElementById('current-question');
+        this.currentDiagnosisElement = document.getElementById('current-diagnosis');
         this.answerYesButton = document.getElementById('answer-yes');
         this.answerNoButton = document.getElementById('answer-no');
 
@@ -76,11 +78,21 @@ class DiagnosisApp {
         this.performDiagnosis();
     }
 
+    updateCurrentDiagnosis(diagnosisName) {
+        this.currentDiagnosisBeingChecked = diagnosisName;
+        if (this.currentDiagnosisElement) {
+            this.currentDiagnosisElement.textContent = diagnosisName;
+        }
+    }
+
     async performDiagnosis() {
         let foundDiagnosis = null;
 
         for (const disease of POSSIBLE_DIAGNOSES) {
             if (foundDiagnosis) break;
+
+            // Update the current diagnosis being checked
+            this.updateCurrentDiagnosis(disease);
 
             const result = await this.checker.proveGoal(disease, (symptomKey) => {
                 return new Promise((resolve) => {
@@ -153,7 +165,7 @@ class DiagnosisApp {
                     <div class="result-alert-content">
                         <strong>Diagnosis yang paling mungkin:</strong>
                         <div class="diagnosis-name">${this.diagnosis}</div>
-                    </div>
+                    </div> 
                 </div>
                 <div class="result-alert">
                     <svg class="result-alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -208,6 +220,7 @@ class DiagnosisApp {
         this.progress = 0;
         this.diagnosis = null;
         this.questionsAsked = 0;
+        this.currentDiagnosisBeingChecked = null;
         this.checker.reset();
         this.showScreen('welcome');
     }
