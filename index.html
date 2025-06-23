@@ -3,154 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Diagnosis Penyakit Pernapasan</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Sistem Diagnosis 10 Penyakit Pernapasan</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <!-- Welcome Screen -->
-        <div id="welcome-screen" class="screen active">
-            <div class="container">
-                <div class="welcome-header">
-                    <div class="app-logo">
-                        <svg class="stethoscope-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M11 2a2 2 0 0 0-2 2v6.5a.5.5 0 0 1-.5.5.5.5 0 0 1-.5-.5V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6.5a.5.5 0 0 1-.5.5.5.5 0 0 1-.5-.5V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v6.5a6.5 6.5 0 0 0 13 0V4a2 2 0 0 0-2-2Z"/>
-                            <circle cx="20" cy="14" r="2"/>
-                            <path d="M20 12v2a2 2 0 0 1-2 2h-2v4a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-4H2a2 2 0 0 1-2-2v-2"/>
-                        </svg>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <div class="icon-container">
+                        <i class="fas fa-lungs"></i>
                     </div>
-                    <h1>Sistem Diagnosis Penyakit Pernapasan</h1>
-                    <p class="welcome-subtitle">Sistem diagnosis penyakit pernapasan berbasis web yang membantu Anda mengenali kemungkinan penyakit berdasarkan gejala yang Anda alami secara cepat dan mudah</p>
+                    <h1>Diagnosis 10 Penyakit Pernapasan</h1>
+                    <p>Sistem diagnosis progresif yang menyimpan setiap jawaban dan mencocokkannya dengan 10 penyakit pernapasan umum untuk hasil yang akurat.</p>
                 </div>
-
-                <div class="features-section">
-                    <div class="features-grid">
-                        <div class="feature-card">
-                            <div class="feature-icon-wrapper diseases">
-                                <svg class="feature-icon diseases" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2C8 2 5 5 5 9v6c0 1 1 2 2 2h10c1 0 2-1 2-2V9c0-4-3-7-7-7Z"/>
-                                    <path d="M12 2v15"/>
-                                </svg>
+                <div class="card-content">
+                    <div class="disease-list">
+                        <h3><i class="fas fa-list-ul"></i> Penyakit yang Dapat Didiagnosis:</h3>
+                        <div class="disease-grid">
+                            <div class="disease-item">
+                                <i class="fas fa-virus"></i>
+                                <span>Pilek Biasa</span>
                             </div>
-                            <h3>10 Penyakit</h3>
-                            <p>Mendiagnosis berbagai penyakit pernapasan dari flu hingga kanker paru dengan akurasi tinggi</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon-wrapper accuracy">
-                                <svg class="feature-icon accuracy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                                </svg>
+                            <div class="disease-item">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>Influenza</span>
                             </div>
-                            <h3>Akurat & Terpercaya</h3>
-                            <p>Memberikan hasil diagnosis berdasarkan data medis dan algoritma yang telah teruji</p>
-                        </div>
-                        <div class="feature-card">
-                            <div class="feature-icon-wrapper consultation">
-                                <svg class="feature-icon consultation" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                                    <line x1="12" y1="9" x2="12" y2="13"/>
-                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                                </svg>
+                            <div class="disease-item">
+                                <i class="fas fa-allergies"></i>
+                                <span>Rinitis Alergi</span>
                             </div>
-                            <h3>Konsultasi Lanjutan</h3>
-                            <p>Hasil diagnosis sebaiknya dikonsultasikan dengan dokter profesional untuk penanganan yang tepat</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="main-card">
-                    <h2>Mulai Pemeriksaan</h2>
-                    <p class="card-description">
-                        Sistem akan menanyakan beberapa gejala untuk membantu menentukan diagnosis yang tepat. 
-                        Jawab dengan jujur sesuai kondisi Anda saat ini.
-                    </p>
-                    <div class="medical-disclaimer">
-                        <svg class="disclaimer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                        <div class="disclaimer-content">
-                            <strong>Penting:</strong> Diagnosis ini adalah perkiraan dan bukan pengganti diagnosis medis
-                            profesional. Segera konsultasikan dengan dokter untuk diagnosis dan penanganan yang akurat.
-                        </div>
-                    </div>
-                    <button id="start-diagnosis" class="btn-start">Mulai Pemeriksaan</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Diagnosis Screen -->
-        <div id="diagnosis-screen" class="screen">
-            <div class="container">
-                <div class="diagnosis-container">
-                    <div class="diagnosis-header">
-                        <div class="progress-info">
-                            <h2>Pemeriksaan Gejala</h2>
-                            <span id="question-counter" class="question-counter">Pertanyaan 0</span>
-                        </div>
-                        <div class="progress-container">
-                            <div class="progress-bar">
-                                <div id="progress-fill" class="progress-fill"></div> 
+                            <div class="disease-item">
+                                <i class="fas fa-head-side-mask"></i>
+                                <span>Sinusitis</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-lungs-virus"></i>
+                                <span>Bronkitis</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-throat"></i>
+                                <span>Faringitis</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-microphone-slash"></i>
+                                <span>Laringitis</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-x-ray"></i>
+                                <span>Pneumonia Ringan</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-wind"></i>
+                                <span>Asma</span>
+                            </div>
+                            <div class="disease-item">
+                                <i class="fas fa-smoking"></i>
+                                <span>PPOK</span>
                             </div>
                         </div>
                     </div>
-
-                    <div id="question-card" class="question-card">
-                        <div class="diagnosis-check-info">
-                            <p class="diagnosis-check-label">Mengecek Kemungkinan Diagnosis:</p>
-                            <div id="current-diagnosis" class="current-diagnosis-name">Memulai pemeriksaan...</div>
-                        </div>
-                        <h3 id="current-question">Loading...</h3>
-                        <p class="question-description">Pilih jawaban yang sesuai dengan kondisi Anda saat ini</p>
-                        <div class="answer-buttons">
-                            <button id="answer-yes" class="btn-answer btn-yes">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                    <polyline points="22,4 12,14.01 9,11.01"/>
-                                </svg>
-                                Ya
-                            </button>
-                            <button id="answer-no" class="btn-answer btn-no">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <line x1="15" y1="9" x2="9" y2="15"/>
-                                    <line x1="9" y1="9" x2="15" y2="15"/>
-                                </svg>
-                                Tidak
-                            </button>
+                    
+                    <div class="info-box info-primary">
+                        <i class="fas fa-brain"></i>
+                        <div>
+                            <strong>Sistem Progresif:</strong> Setiap jawaban disimpan dan dianalisis secara kumulatif untuk mencocokkan pola gejala dengan penyakit yang tepat.
                         </div>
                     </div>
+                    
+                    <div class="info-box info-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Penting:</strong> Sistem ini untuk referensi. Jika gejala berat atau berlanjut, segera konsultasi dokter.
+                        </div>
+                    </div>
+                    
+                    <button id="start-diagnosis" class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Mulai Diagnosis Progresif
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Result Screen -->
-        <div id="result-screen" class="screen">
-            <div class="container">
-                <div class="result-container">
-                    <div class="result-card">
-                        <div class="result-header">
-                            <div id="result-icon" class="result-icon-container">
-                                <!-- Icon will be inserted here -->
-                            </div>
-                            <h2>Hasil Pemeriksaan</h2>
+    <!-- Diagnosis Screen -->
+    <div id="diagnosis-screen" class="screen">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <div class="progress-info">
+                        <span id="question-counter">Pertanyaan 1</span>
+                        <span id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div class="status-info">
+                        <div class="status-item">
+                            <i class="fas fa-database"></i>
+                            <span>Menyimpan jawaban...</span>
                         </div>
-                        <div id="result-content" class="result-content">
-                            <!-- Result content will be inserted here -->
+                        <div class="status-item positive">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Gejala: <span id="positive-count">0</span></span>
                         </div>
-                        <div class="result-actions">
-                            <button id="reset-diagnosis" class="btn-outline">Periksa Ulang</button>
-                            <button id="consult-doctor" class="btn-primary">Konsultasi Dokter</button>
+                        <div class="status-item analysis">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analisis: <span id="top-disease">-</span></span>
                         </div>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="question-container">
+                        <h2 id="current-question">Memuat pertanyaan...</h2>
+                    </div>
+                    <div class="answer-buttons">
+                        <button id="answer-yes" class="btn btn-success">
+                            <i class="fas fa-check"></i>
+                            Ya, Saya Alami
+                        </button>
+                        <button id="answer-no" class="btn btn-danger">
+                            <i class="fas fa-times"></i>
+                            Tidak
+                        </button>
+                    </div>
+                    
+                    <!-- Real-time analysis display -->
+                    <div id="analysis-panel" class="analysis-panel">
+                        <h4><i class="fas fa-microscope"></i> Analisis Real-time</h4>
+                        <div id="disease-probabilities"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="medical-data.js"></script>
-    <script src="symptom-checker.js"></script>
-    <script src="app.js"></script>
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <div id="result-icon" class="icon-container">
+                        <!-- Icon will be inserted here -->
+                    </div>
+                    <h1>Hasil Diagnosis Progresif</h1>
+                </div>
+                <div class="card-content">
+                    <div id="result-content">
+                        <!-- Result content will be inserted here -->
+                    </div>
+                    <div class="action-buttons">
+                        <button id="reset-diagnosis" class="btn btn-secondary">
+                            <i class="fas fa-redo"></i>
+                            Diagnosis Ulang
+                        </button>
+                        <button id="consult-doctor" class="btn btn-primary">
+                            <i class="fas fa-user-md"></i>
+                            Konsultasi Dokter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
