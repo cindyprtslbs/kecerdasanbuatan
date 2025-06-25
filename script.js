@@ -1,681 +1,573 @@
-// 10 Penyakit Pernapasan dengan Gejala Medis Akurat
-const RESPIRATORY_DISEASES = {
-  "Pilek Biasa (Common Cold)": {
-    primary: [
-      "hidung_berair_bening",
-      "hidung_tersumbat_ringan",
-      "bersin_ringan",
-      "tenggorokan_gatal_ringan",
-      "batuk_kering_ringan",
-    ],
-    secondary: ["demam_ringan_37_38", "sakit_kepala_ringan", "kelelahan_ringan", "hidung_gatal", "mata_berair_ringan"],
-    minScore: 3,
+// Disease Knowledge Base for Backward Chaining
+const DISEASE_KNOWLEDGE_BASE = {
+  "Pilek Biasa": {
     icon: "fas fa-virus",
-    description: "Infeksi virus pada saluran pernapasan atas yang ringan",
-    facts: "Disebabkan oleh rhinovirus (40%), coronavirus (20%), atau virus lainnya. Berlangsung 7-10 hari.",
-    prevalence: "Sangat umum, 2-3 episode per tahun pada dewasa",
+    keySymptoms: ["hidung_berair_bening", "bersin_ringan", "hidung_tersumbat_ringan"],
+    confirmingSymptoms: ["tenggorokan_gatal_ringan", "batuk_kering_ringan", "kelelahan_ringan"],
+    excludingSymptoms: ["demam_tinggi_38_5", "nyeri_otot_seluruh_tubuh", "sesak_napas_istirahat"],
+    differentialQuestions: [
+      "Apakah demam Anda di bawah 38°C atau tidak ada demam sama sekali?",
+      "Apakah gejala berkembang secara bertahap dalam 1-2 hari?",
+      "Apakah cairan hidung jernih dan encer seperti air?",
+    ],
+    priority: 1,
   },
 
-  "Influenza (Flu)": {
-    primary: [
-      "demam_tinggi_38_5",
-      "demam_mendadak_24jam",
-      "nyeri_otot_seluruh_tubuh",
-      "kelelahan_sangat_berat",
-      "sakit_kepala_berat",
-      "menggigil_hebat",
-    ],
-    secondary: [
-      "batuk_kering_persisten",
-      "sakit_tenggorokan_berat",
-      "hidung_tersumbat_berat",
-      "berkeringat_malam",
-      "mual_muntah",
-      "nafsu_makan_hilang_total",
-    ],
-    minScore: 4,
+  Influenza: {
     icon: "fas fa-thermometer-half",
-    description: "Infeksi virus influenza yang menyerang sistem pernapasan",
-    facts: "Virus influenza A, B, atau C. Onset mendadak dengan gejala sistemik berat. Komplikasi: pneumonia.",
-    prevalence: "Musiman, 5-20% populasi per tahun",
+    keySymptoms: ["demam_tinggi_38_5", "nyeri_otot_seluruh_tubuh", "kelelahan_sangat_berat"],
+    confirmingSymptoms: ["demam_mendadak_24jam", "menggigil_hebat", "sakit_kepala_berat"],
+    excludingSymptoms: ["hidung_berair_bening", "bersin_beruntun", "gejala_bertahap"],
+    differentialQuestions: [
+      "Apakah gejala muncul secara tiba-tiba dalam 24 jam?",
+      "Apakah Anda merasa sangat lemah hingga sulit bangkit dari tempat tidur?",
+      "Apakah seluruh tubuh terasa nyeri dan pegal?",
+    ],
+    priority: 2,
   },
 
-  "Rinitis Alergi (Allergic Rhinitis)": {
-    primary: ["bersin_beruntun_5_lebih", "hidung_gatal_dalam", "mata_gatal_berair", "hidung_berair_encer_jernih"],
-    secondary: [
-      "hidung_tersumbat_bergantian",
-      "gatal_langit_mulut",
-      "mata_merah_bengkak",
-      "lingkaran_hitam_mata",
-      "gejala_musiman_tertentu",
-      "reaksi_debu_serbuk_sari",
-    ],
-    minScore: 3,
+  "Rinitis Alergi": {
     icon: "fas fa-allergies",
-    description: "Reaksi alergi pada mukosa hidung dan mata",
-    facts: "Reaksi IgE terhadap alergen. Tipe: seasonal (serbuk sari) atau perennial (debu, tungau).",
-    prevalence: "10-25% populasi, sering dimulai masa kanak-kanak",
+    keySymptoms: ["bersin_beruntun_5_lebih", "mata_gatal_berair", "hidung_gatal_dalam"],
+    confirmingSymptoms: ["gejala_musiman", "reaksi_alergen", "hidung_tersumbat_bergantian"],
+    excludingSymptoms: ["demam_tinggi", "nyeri_tenggorokan_berat", "dahak_kental"],
+    differentialQuestions: [
+      "Apakah gejala memburuk pada musim tertentu atau saat terkena debu?",
+      "Apakah Anda bersin beruntun 5 kali atau lebih dalam satu episode?",
+      "Apakah mata dan hidung gatal secara bersamaan?",
+    ],
+    priority: 3,
   },
 
   "Sinusitis Akut": {
-    primary: [
-      "nyeri_wajah_pipi_dahi",
-      "tekanan_kepala_depan",
-      "hidung_tersumbat_total_unilateral",
-      "ingus_kental_kuning_hijau",
-    ],
-    secondary: [
-      "nyeri_bertambah_membungkuk",
-      "kehilangan_penciuman_total",
-      "bau_mulut_ingus",
-      "nyeri_gigi_atas",
-      "demam_sedang_38_39",
-      "post_nasal_drip",
-    ],
-    minScore: 3,
     icon: "fas fa-head-side-mask",
-    description: "Peradangan akut pada sinus paranasal",
-    facts:
-      "Komplikasi pilek/alergi. Bakteri: S.pneumoniae, H.influenzae. Durasi >10 hari atau memburuk setelah 5-7 hari.",
-    prevalence: "12% dewasa per tahun, lebih sering musim dingin",
+    keySymptoms: ["nyeri_wajah_pipi_dahi", "ingus_kental_kuning_hijau", "hidung_tersumbat_unilateral"],
+    confirmingSymptoms: ["nyeri_bertambah_membungkuk", "kehilangan_penciuman", "nyeri_gigi_atas"],
+    excludingSymptoms: ["bersin_beruntun", "mata_gatal", "gejala_ringan_saja"],
+    differentialQuestions: [
+      "Apakah nyeri wajah bertambah saat membungkuk atau menunduk?",
+      "Apakah ingus berwarna kuning kehijauan dan kental?",
+      "Apakah hidung tersumbat lebih dominan pada satu sisi?",
+    ],
+    priority: 4,
   },
 
   "Bronkitis Akut": {
-    primary: [
-      "batuk_produktif_dahak_kental",
-      "dahak_kuning_hijau_pagi",
-      "batuk_memburuk_malam",
-      "dada_terasa_berat_sesak",
-    ],
-    secondary: [
-      "sesak_napas_aktivitas_ringan",
-      "bunyi_napas_mengi_wheezing",
-      "nyeri_dada_saat_batuk",
-      "kelelahan_sedang",
-      "demam_ringan_subfebris",
-      "batuk_berlangsung_2_3_minggu",
-    ],
-    minScore: 3,
     icon: "fas fa-lungs-virus",
-    description: "Peradangan akut pada bronkus dan bronkiolus",
-    facts:
-      "90% virus (rhinovirus, influenza, RSV). 10% bakteri (M.pneumoniae, C.pneumoniae). Batuk dapat berlangsung 2-3 minggu.",
-    prevalence: "5% dewasa per tahun, lebih tinggi pada perokok",
+    keySymptoms: ["batuk_produktif_dahak", "dahak_kuning_hijau", "batuk_memburuk_malam"],
+    confirmingSymptoms: ["dada_terasa_berat", "sesak_napas_ringan", "bunyi_napas_kasar"],
+    excludingSymptoms: ["suara_serak", "kehilangan_suara", "nyeri_wajah"],
+    differentialQuestions: [
+      "Apakah batuk mengeluarkan dahak yang kental?",
+      "Apakah batuk memburuk di malam hari?",
+      "Apakah dada terasa berat atau sesak saat batuk?",
+    ],
+    priority: 5,
   },
 
   "Faringitis Akut": {
-    primary: [
-      "sakit_tenggorokan_menelan_berat",
-      "tenggorokan_merah_bengkak",
-      "kesulitan_menelan_makanan",
-      "amandel_bengkak_merah",
-    ],
-    secondary: [
-      "demam_tinggi_39_lebih",
-      "kelenjar_leher_bengkak_nyeri",
-      "bercak_putih_kuning_tenggorokan",
-      "bau_mulut_tidak_sedap",
-      "sakit_kepala_demam",
-      "tidak_ada_batuk_pilek",
-    ],
-    minScore: 3,
     icon: "fas fa-throat",
-    description: "Peradangan akut pada faring dan amandel",
-    facts:
-      "Virus (70%): EBV, adenovirus. Bakteri (30%): Streptococcus pyogenes (strep throat). Kriteria Centor untuk strep throat.",
-    prevalence: "Sangat umum, terutama anak-anak dan remaja",
+    keySymptoms: ["sakit_tenggorokan_menelan", "tenggorokan_merah_bengkak", "kesulitan_menelan"],
+    confirmingSymptoms: ["amandel_bengkak", "kelenjar_leher_bengkak", "bercak_putih_tenggorokan"],
+    excludingSymptoms: ["hidung_berair", "bersin_beruntun", "suara_serak"],
+    differentialQuestions: [
+      "Apakah rasa sakit tenggorokan sangat hebat saat menelan?",
+      "Apakah tenggorokan tampak merah dan bengkak?",
+      "Apakah ada kesulitan menelan makanan atau minuman?",
+    ],
+    priority: 6,
   },
 
   "Laringitis Akut": {
-    primary: ["suara_serak_parau", "kehilangan_suara_total", "batuk_kering_menggonggong", "tenggorokan_kering_kasar"],
-    secondary: [
-      "nyeri_tenggorokan_berbicara",
-      "sensasi_ganjal_tenggorokan",
-      "batuk_memburuk_malam",
-      "demam_ringan_subfebris",
-      "kesulitan_bicara_keras",
-      "rasa_terbakar_tenggorokan",
-    ],
-    minScore: 3,
     icon: "fas fa-microphone-slash",
-    description: "Peradangan pada laring dan pita suara",
-    facts: "Virus (95%): rhinovirus, influenza, parainfluenza. Penyebab: infeksi, overuse suara, GERD, alergi.",
-    prevalence: "Umum pada dewasa muda, profesi pengguna suara",
+    keySymptoms: ["suara_serak_parau", "kehilangan_suara", "batuk_kering_menggonggong"],
+    confirmingSymptoms: ["tenggorokan_kering_kasar", "nyeri_berbicara", "sensasi_ganjal"],
+    excludingSymptoms: ["kesulitan_menelan_berat", "amandel_bengkak", "kelenjar_bengkak"],
+    differentialQuestions: [
+      "Apakah suara Anda serak atau bahkan hilang sama sekali?",
+      "Apakah batuk berbunyi kering seperti gonggongan?",
+      "Apakah tenggorokan terasa kering dan kasar?",
+    ],
+    priority: 7,
   },
 
-  "Pneumonia Ringan (Community-Acquired)": {
-    primary: [
-      "batuk_produktif_dahak_berkarat",
-      "sesak_napas_istirahat",
-      "nyeri_dada_tajam_napas_dalam",
-      "demam_tinggi_menggigil_hebat",
-    ],
-    secondary: [
-      "kelelahan_sangat_berat",
-      "berkeringat_malam_banyak",
-      "nafsu_makan_hilang_total",
-      "mual_muntah_demam",
-      "nyeri_otot_sendi",
-      "kebingungan_lansia",
-    ],
-    minScore: 4,
+  "Pneumonia Ringan": {
     icon: "fas fa-x-ray",
-    description: "Infeksi akut pada parenkim paru",
-    facts:
-      "Bakteri: S.pneumoniae (paling umum), H.influenzae, M.pneumoniae. Virus: influenza, RSV. Diagnosis: foto thorax.",
-    prevalence: "1-4 per 1000 dewasa per tahun, mortalitas 1-5%",
+    keySymptoms: ["batuk_dahak_berkarat", "sesak_napas_istirahat", "nyeri_dada_napas_dalam"],
+    confirmingSymptoms: ["demam_tinggi_menggigil", "kelelahan_berat", "berkeringat_malam"],
+    excludingSymptoms: ["gejala_ringan_saja", "tidak_ada_demam", "aktivitas_normal"],
+    differentialQuestions: [
+      "Apakah dahak berwarna seperti karat atau kecoklatan?",
+      "Apakah Anda sesak napas bahkan saat istirahat?",
+      "Apakah dada terasa nyeri tajam saat menarik napas dalam?",
+    ],
+    priority: 8,
   },
 
   "Asma Eksaserbasi": {
-    primary: [
-      "sesak_napas_mendadak",
-      "bunyi_mengi_ekspirasi",
-      "batuk_kering_malam_dini_hari",
-      "dada_terasa_tertekan_sesak",
-    ],
-    secondary: [
-      "kesulitan_bicara_kalimat_penuh",
-      "penggunaan_otot_bantu_napas",
-      "napas_cepat_dangkal",
-      "cemas_gelisah_sesak",
-      "trigger_alergen_cuaca_dingin",
-      "riwayat_asma_sebelumnya",
-    ],
-    minScore: 3,
     icon: "fas fa-wind",
-    description: "Eksaserbasi akut penyakit asma bronkial",
-    facts:
-      "Obstruksi reversibel saluran napas. Trigger: alergen, infeksi, cuaca, stress, obat. Peak flow <80% nilai terbaik.",
-    prevalence: "8-10% populasi, onset biasanya masa kanak-kanak",
+    keySymptoms: ["sesak_napas_mendadak", "bunyi_mengi_ekspirasi", "batuk_kering_malam"],
+    confirmingSymptoms: ["dada_tertekan", "kesulitan_bicara_penuh", "riwayat_asma"],
+    excludingSymptoms: ["dahak_kental_purulen", "demam_tinggi", "nyeri_wajah"],
+    differentialQuestions: [
+      "Apakah sesak napas muncul secara tiba-tiba?",
+      "Apakah ada bunyi 'ngik-ngik' saat mengeluarkan napas?",
+      "Apakah Anda memiliki riwayat asma sebelumnya?",
+    ],
+    priority: 9,
   },
 
-  "PPOK Eksaserbasi (COPD)": {
-    primary: [
-      "sesak_napas_progresif_kronik",
-      "batuk_produktif_kronik_pagi",
-      "dahak_purulen_kuning_hijau",
-      "riwayat_merokok_lama",
-    ],
-    secondary: [
-      "barrel_chest_dada_tong",
-      "clubbing_jari_tabuh",
-      "sianosis_bibir_kuku",
-      "kelelahan_kronik_berat",
-      "penurunan_berat_badan",
-      "infeksi_berulang_saluran_napas",
-    ],
-    minScore: 4,
+  "PPOK Eksaserbasi": {
     icon: "fas fa-smoking",
-    description: "Eksaserbasi penyakit paru obstruktif kronik",
-    facts:
-      "Obstruksi ireversibel. Penyebab utama: merokok (85-90%). Spirometri: FEV1/FVC <70%. Stadium berdasarkan FEV1.",
-    prevalence: "6-10% dewasa >40 tahun, penyebab kematian ke-4 dunia",
+    keySymptoms: ["sesak_napas_progresif", "batuk_kronik_pagi", "dahak_purulen"],
+    confirmingSymptoms: ["riwayat_merokok_lama", "barrel_chest", "clubbing_jari"],
+    excludingSymptoms: ["gejala_akut_mendadak", "tidak_ada_riwayat_merokok", "usia_muda"],
+    differentialQuestions: [
+      "Apakah Anda memiliki riwayat merokok lebih dari 10 tahun?",
+      "Apakah sesak napas semakin memburuk secara bertahap?",
+      "Apakah batuk berdahak terutama di pagi hari sudah berlangsung lama?",
+    ],
+    priority: 10,
   },
 }
 
-// Gejala dengan pertanyaan medis yang spesifik dan terukur
-const MEDICAL_SYMPTOMS = {
-  // Gejala Demam dan Sistemik
-  demam_tinggi_38_5: "Apakah suhu tubuh Anda 38.5°C atau lebih tinggi (diukur dengan termometer)?",
-  demam_ringan_37_38: "Apakah Anda merasa demam ringan (37-38°C) atau badan hangat?",
-  demam_sedang_38_39: "Apakah demam Anda sedang (38-39°C) disertai rasa tidak nyaman?",
-  demam_mendadak_24jam: "Apakah demam muncul secara tiba-tiba dalam 24 jam terakhir?",
-  menggigil_hebat: "Apakah Anda menggigil hebat hingga tubuh gemetar tidak terkontrol?",
-  berkeringat_malam: "Apakah Anda berkeringat berlebihan di malam hari hingga membasahi pakaian?",
-
-  // Gejala Nyeri dan Kelelahan
-  nyeri_otot_seluruh_tubuh: "Apakah seluruh otot tubuh Anda terasa sangat nyeri dan pegal?",
-  kelelahan_sangat_berat: "Apakah Anda merasa sangat lelah hingga sulit bangkit dari tempat tidur?",
-  kelelahan_sedang: "Apakah Anda merasa lelah lebih dari biasanya namun masih bisa beraktivitas?",
-  kelelahan_ringan: "Apakah Anda merasa sedikit lelah atau kurang bertenaga?",
-  sakit_kepala_berat: "Apakah sakit kepala Anda sangat mengganggu dan berdenyut-denyut?",
-  sakit_kepala_ringan: "Apakah Anda merasakan sakit kepala ringan atau pusing?",
-
-  // Gejala Hidung dan Sinus
-  hidung_berair_bening: "Apakah hidung Anda mengeluarkan cairan bening dan encer seperti air?",
-  hidung_berair_encer_jernih: "Apakah cairan hidung jernih, encer, dan terus-menerus keluar?",
-  ingus_kental_kuning_hijau: "Apakah ingus Anda kental dan berwarna kuning kehijauan?",
-  hidung_tersumbat_ringan: "Apakah hidung Anda tersumbat ringan namun masih bisa bernapas?",
-  hidung_tersumbat_berat: "Apakah hidung tersumbat total sehingga harus bernapas melalui mulut?",
-  hidung_tersumbat_total_unilateral: "Apakah hidung tersumbat total hanya pada satu sisi?",
-  hidung_tersumbat_bergantian: "Apakah hidung tersumbat bergantian antara kiri dan kanan?",
-  hidung_gatal: "Apakah hidung bagian dalam terasa gatal?",
-  hidung_gatal_dalam: "Apakah bagian dalam hidung terasa sangat gatal hingga ingin digaruk terus?",
-  kehilangan_penciuman_total: "Apakah Anda kehilangan kemampuan mencium bau sama sekali?",
-
-  // Gejala Bersin
-  bersin_ringan: "Apakah Anda bersin sesekali (1-3 kali) dalam sehari?",
-  bersin_beruntun_5_lebih: "Apakah Anda bersin beruntun 5 kali atau lebih dalam satu episode?",
-
-  // Gejala Tenggorokan
-  tenggorokan_gatal_ringan: "Apakah tenggorokan terasa gatal ringan atau garuk-garuk?",
-  sakit_tenggorokan_berat: "Apakah tenggorokan sangat sakit terutama saat menelan?",
-  sakit_tenggorokan_menelan_berat: "Apakah rasa sakit tenggorokan sangat hebat saat menelan makanan/minuman?",
-  tenggorokan_kering_kasar: "Apakah tenggorokan terasa kering dan kasar seperti amplas?",
-  tenggorokan_merah_bengkak: "Apakah tenggorokan terlihat merah dan bengkak (dilihat di cermin)?",
-  kesulitan_menelan_makanan: "Apakah Anda kesulitan atau takut menelan makanan karena sakit?",
-  sensasi_ganjal_tenggorokan: "Apakah ada sensasi seperti ada yang mengganjal di tenggorokan?",
-  nyeri_tenggorokan_berbicara: "Apakah tenggorokan terasa nyeri saat berbicara?",
-  rasa_terbakar_tenggorokan: "Apakah tenggorokan terasa terbakar atau perih?",
-
-  // Gejala Suara
-  suara_serak_parau: "Apakah suara Anda serak, parau, atau berubah dari biasanya?",
-  kehilangan_suara_total: "Apakah Anda kehilangan suara atau hanya bisa berbisik?",
-  kesulitan_bicara_keras: "Apakah Anda kesulitan berbicara dengan suara keras?",
-
-  // Gejala Batuk
-  batuk_kering_ringan: "Apakah Anda batuk kering ringan tanpa dahak?",
-  batuk_kering_persisten: "Apakah Anda batuk kering terus-menerus yang mengganggu?",
-  batuk_kering_menggonggong: "Apakah batuk Anda kering dan berbunyi seperti gonggongan anjing?",
-  batuk_produktif_dahak_kental: "Apakah Anda batuk mengeluarkan dahak yang kental?",
-  batuk_produktif_dahak_berkarat: "Apakah dahak yang keluar berwarna seperti karat besi atau kecoklatan?",
-  batuk_memburuk_malam: "Apakah batuk memburuk atau lebih sering di malam hari?",
-  batuk_kering_malam_dini_hari: "Apakah batuk kering mengganggu tidur di malam atau dini hari?",
-  batuk_berlangsung_2_3_minggu: "Apakah batuk sudah berlangsung 2-3 minggu atau lebih?",
-  nyeri_dada_saat_batuk: "Apakah dada terasa nyeri saat batuk?",
-
-  // Gejala Dahak
-  dahak_kuning_hijau_pagi: "Apakah dahak berwarna kuning kehijauan terutama di pagi hari?",
-  dahak_purulen_kuning_hijau: "Apakah dahak kental, purulen (bernanah), dan berwarna kuning-hijau?",
-
-  // Gejala Pernapasan
-  sesak_napas_istirahat: "Apakah Anda sesak napas bahkan saat istirahat atau tidak beraktivitas?",
-  sesak_napas_aktivitas_ringan: "Apakah Anda sesak napas saat melakukan aktivitas ringan (jalan santai)?",
-  sesak_napas_mendadak: "Apakah sesak napas muncul secara tiba-tiba?",
-  sesak_napas_progresif_kronik: "Apakah sesak napas semakin memburuk secara bertahap dalam bulan/tahun terakhir?",
-  bunyi_napas_mengi_wheezing: "Apakah napas berbunyi 'ngik-ngik' atau mengi terutama saat mengeluarkan napas?",
-  bunyi_mengi_ekspirasi: "Apakah ada bunyi mengi saat mengeluarkan napas (ekspirasi)?",
-  kesulitan_bicara_kalimat_penuh: "Apakah Anda kesulitan menyelesaikan satu kalimat penuh karena sesak?",
-  penggunaan_otot_bantu_napas: "Apakah Anda menggunakan otot leher/dada tambahan untuk bernapas?",
-  napas_cepat_dangkal: "Apakah napas Anda menjadi cepat dan dangkal?",
-
-  // Gejala Dada
-  dada_terasa_berat_sesak: "Apakah dada terasa berat, sesak, atau tertekan?",
-  dada_terasa_tertekan_sesak: "Apakah dada terasa seperti ditekan atau diikat kencang?",
-  nyeri_dada_tajam_napas_dalam: "Apakah dada terasa nyeri tajam saat menarik napas dalam?",
-  barrel_chest_dada_tong: "Apakah bentuk dada tampak membesar seperti tong (untuk PPOK)?",
-
-  // Gejala Mata
-  mata_berair_ringan: "Apakah mata berair ringan?",
-  mata_gatal_berair: "Apakah mata gatal dan berair secara bersamaan?",
-  mata_merah_bengkak: "Apakah mata merah, bengkak, atau iritasi?",
-  lingkaran_hitam_mata: "Apakah ada lingkaran hitam di bawah mata (allergic shiners)?",
-
-  // Gejala Wajah dan Sinus
-  nyeri_wajah_pipi_dahi: "Apakah wajah terasa nyeri terutama di area pipi, dahi, atau sekitar mata?",
-  tekanan_kepala_depan: "Apakah kepala bagian depan terasa tertekan atau berat?",
-  nyeri_bertambah_membungkuk: "Apakah nyeri kepala/wajah bertambah saat membungkuk atau menunduk?",
-  nyeri_gigi_atas: "Apakah gigi bagian atas terasa nyeri atau ngilu?",
-
-  // Gejala Sistemik Lainnya
-  nafsu_makan_hilang_total: "Apakah nafsu makan hilang sama sekali?",
-  mual_muntah: "Apakah Anda merasa mual atau muntah?",
-  mual_muntah_demam: "Apakah mual/muntah disertai dengan demam?",
-  cemas_gelisah_sesak: "Apakah Anda merasa cemas atau gelisah karena sesak napas?",
-
-  // Gejala Spesifik Alergi
-  gatal_langit_mulut: "Apakah langit-langit mulut terasa gatal?",
-  gejala_musiman_tertentu: "Apakah gejala muncul pada musim tertentu (hujan/kemarau/berbunga)?",
-  reaksi_debu_serbuk_sari: "Apakah gejala memburuk saat terkena debu, serbuk sari, atau bulu hewan?",
-  trigger_alergen_cuaca_dingin: "Apakah gejala dipicu oleh alergen tertentu atau cuaca dingin?",
-
-  // Gejala Spesifik Kondisi Kronik
-  riwayat_merokok_lama: "Apakah Anda memiliki riwayat merokok >10 tahun atau perokok berat?",
-  riwayat_asma_sebelumnya: "Apakah Anda memiliki riwayat asma atau pernah didiagnosis asma?",
-  batuk_produktif_kronik_pagi:
-    "Apakah Anda batuk berdahak kronik terutama pagi hari >3 bulan dalam 2 tahun berturut-turut?",
-  infeksi_berulang_saluran_napas: "Apakah Anda sering mengalami infeksi saluran napas (>3x/tahun)?",
-  penurunan_berat_badan: "Apakah berat badan menurun tanpa sebab yang jelas?",
-
-  // Gejala Fisik Spesifik
-  amandel_bengkak_merah: "Apakah amandel (tonsil) tampak bengkak dan merah?",
-  kelenjar_leher_bengkak_nyeri: "Apakah kelenjar getah bening di leher bengkak dan nyeri saat ditekan?",
-  bercak_putih_kuning_tenggorokan: "Apakah ada bercak putih atau kuning di tenggorokan/amandel?",
-  bau_mulut_tidak_sedap: "Apakah mulut berbau tidak sedap yang tidak biasa?",
-  bau_mulut_ingus: "Apakah ada bau tidak sedap dari hidung atau post-nasal drip?",
-  post_nasal_drip: "Apakah ada sensasi cairan mengalir dari hidung ke tenggorokan?",
-  clubbing_jari_tabuh: "Apakah ujung jari tampak membesar atau berbentuk tabuh?",
-  sianosis_bibir_kuku: "Apakah bibir atau kuku tampak kebiruan?",
-  tidak_ada_batuk_pilek: "Apakah TIDAK ada gejala batuk atau pilek bersamaan?",
-  kebingungan_lansia: "Apakah ada kebingungan atau perubahan mental (khusus lansia)?",
+// Symptom mapping for initial screening
+const INITIAL_SYMPTOM_MAPPING = {
+  fever_high: ["demam_tinggi_38_5", "demam_mendadak_24jam"],
+  body_ache: ["nyeri_otot_seluruh_tubuh", "kelelahan_sangat_berat"],
+  severe_fatigue: ["kelelahan_sangat_berat", "kelelahan_berat"],
+  runny_nose: ["hidung_berair_bening", "hidung_berair_encer"],
+  nasal_congestion: ["hidung_tersumbat_ringan", "hidung_tersumbat_berat"],
+  sneezing: ["bersin_ringan", "bersin_beruntun_5_lebih"],
+  facial_pain: ["nyeri_wajah_pipi_dahi", "tekanan_kepala_depan"],
+  cough_dry: ["batuk_kering_ringan", "batuk_kering_persisten"],
+  cough_productive: ["batuk_produktif_dahak", "dahak_kuning_hijau"],
+  shortness_breath: ["sesak_napas_istirahat", "sesak_napas_aktivitas"],
+  wheezing: ["bunyi_mengi_ekspirasi", "bunyi_napas_mengi"],
+  sore_throat: ["sakit_tenggorokan_menelan", "tenggorokan_merah_bengkak"],
+  hoarse_voice: ["suara_serak_parau", "kehilangan_suara"],
+  difficulty_swallowing: ["kesulitan_menelan_makanan", "nyeri_menelan"],
 }
 
-// Sistem Diagnosis Progresif
-class ProgressiveDiagnosisSystem {
+// Backward Chaining Diagnosis System
+class BackwardChainingDiagnosisSystem {
   constructor() {
-    this.knownFacts = {}
-    this.askedQuestions = new Set()
-    this.diseaseScores = {}
+    this.knownFacts = new Map()
+    this.hypotheses = []
+    this.eliminatedDiseases = new Set()
+    this.confirmedDiseases = new Set()
+    this.currentHypothesis = null
     this.questionHistory = []
-    this.positiveSymptoms = new Set()
-    this.currentQuestion = null
     this.questionsAsked = 0
-    this.isProcessing = false
-    this.shuffledQuestions = []
+    this.initialSymptoms = []
   }
 
-  initializeShuffledQuestions() {
-    const allQuestions = Object.keys(MEDICAL_SYMPTOMS)
-    this.shuffledQuestions = this.shuffleArray([...allQuestions])
-  }
+  // Initialize hypotheses based on initial symptoms
+  initializeHypotheses(selectedSymptoms) {
+    this.initialSymptoms = selectedSymptoms
+    const hypothesesScores = new Map()
 
-  shuffleArray(array) {
-    const shuffled = [...array]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-    }
-    return shuffled
-  }
-
-  setKnownFact(symptomKey, value) {
-    this.knownFacts[symptomKey] = value
-    this.askedQuestions.add(symptomKey)
-    this.questionHistory.push({
-      symptom: symptomKey,
-      answer: value,
-      timestamp: Date.now(),
-      question: MEDICAL_SYMPTOMS[symptomKey],
-    })
-
-    if (value) {
-      this.positiveSymptoms.add(symptomKey)
-    }
-
-    // Update scores immediately after each answer
-    this.updateDiseaseScores()
-  }
-
-  updateDiseaseScores() {
-    this.diseaseScores = {}
-
-    Object.entries(RESPIRATORY_DISEASES).forEach(([disease, config]) => {
+    // Score each disease based on initial symptoms
+    Object.entries(DISEASE_KNOWLEDGE_BASE).forEach(([disease, config]) => {
       let score = 0
-      const maxPossibleScore = config.primary.length * 3 + config.secondary.length * 1
 
-      // Primary symptoms (weight 3)
-      config.primary.forEach((symptom) => {
-        if (this.knownFacts[symptom] === true) score += 3
-        else if (this.knownFacts[symptom] === false) score -= 0.5
+      selectedSymptoms.forEach((symptom) => {
+        const mappedSymptoms = INITIAL_SYMPTOM_MAPPING[symptom] || []
+
+        // Check if any mapped symptoms match key symptoms
+        const keyMatches = mappedSymptoms.filter((ms) => config.keySymptoms.includes(ms)).length
+
+        // Check if any mapped symptoms match confirming symptoms
+        const confirmingMatches = mappedSymptoms.filter((ms) => config.confirmingSymptoms.includes(ms)).length
+
+        score += keyMatches * 3 + confirmingMatches * 1
       })
 
-      // Secondary symptoms (weight 1)
-      config.secondary.forEach((symptom) => {
-        if (this.knownFacts[symptom] === true) score += 1
-        else if (this.knownFacts[symptom] === false) score -= 0.2
+      if (score > 0) {
+        hypothesesScores.set(disease, score)
+      }
+    })
+
+    // Sort hypotheses by score and priority
+    this.hypotheses = Array.from(hypothesesScores.entries())
+      .sort((a, b) => {
+        if (b[1] !== a[1]) return b[1] - a[1] // Sort by score first
+        return DISEASE_KNOWLEDGE_BASE[a[0]].priority - DISEASE_KNOWLEDGE_BASE[b[0]].priority
       })
+      .map(([disease]) => disease)
 
-      // Calculate confidence based on answered questions
-      const totalSymptoms = config.primary.length + config.secondary.length
-      const answeredSymptoms = [...config.primary, ...config.secondary].filter(
-        (symptom) => symptom in this.knownFacts,
-      ).length
+    // If no strong hypotheses, include all diseases
+    if (this.hypotheses.length === 0) {
+      this.hypotheses = Object.keys(DISEASE_KNOWLEDGE_BASE).sort(
+        (a, b) => DISEASE_KNOWLEDGE_BASE[a].priority - DISEASE_KNOWLEDGE_BASE[b].priority,
+      )
+    }
 
-      const confidence = answeredSymptoms / totalSymptoms
-
-      // Bonus scoring for specific disease patterns
-      score += this.calculateBonusScore(disease, config)
-
-      this.diseaseScores[disease] = {
-        score: Math.max(0, score),
-        confidence,
-        normalizedScore: score / maxPossibleScore,
-        meetsMinimum: score >= config.minScore,
-        config: config,
-        matchedSymptoms: this.getMatchedSymptoms(config),
-      }
-    })
+    this.currentHypothesis = this.hypotheses[0]
   }
 
-  calculateBonusScore(disease, config) {
-    let bonus = 0
-
-    // Flu triad bonus
-    if (disease === "Influenza (Flu)") {
-      const fluTriad = ["demam_tinggi_38_5", "nyeri_otot_seluruh_tubuh", "kelelahan_sangat_berat"]
-      const fluTriadCount = fluTriad.filter((symptom) => this.knownFacts[symptom] === true).length
-      if (fluTriadCount >= 2) bonus += 2
-
-      // Sudden onset bonus
-      if (this.knownFacts["demam_mendadak_24jam"] === true) bonus += 1
-    }
-
-    // Allergic rhinitis pattern bonus
-    if (disease === "Rinitis Alergi (Allergic Rhinitis)") {
-      const allergyPattern = ["bersin_beruntun_5_lebih", "mata_gatal_berair", "hidung_gatal_dalam"]
-      const allergyCount = allergyPattern.filter((symptom) => this.knownFacts[symptom] === true).length
-      if (allergyCount >= 2) bonus += 2
-    }
-
-    // Sinusitis facial pain pattern
-    if (disease === "Sinusitis Akut") {
-      if (this.knownFacts["nyeri_wajah_pipi_dahi"] === true && this.knownFacts["nyeri_bertambah_membungkuk"] === true) {
-        bonus += 2
-      }
-    }
-
-    // COPD smoking history
-    if (disease === "PPOK Eksaserbasi (COPD)") {
-      if (this.knownFacts["riwayat_merokok_lama"] === true) bonus += 2
-    }
-
-    // Asthma pattern
-    if (disease === "Asma Eksaserbasi") {
-      const asthmaTriad = ["sesak_napas_mendadak", "bunyi_mengi_ekspirasi", "batuk_kering_malam_dini_hari"]
-      const asthmaCount = asthmaTriad.filter((symptom) => this.knownFacts[symptom] === true).length
-      if (asthmaCount >= 2) bonus += 2
-    }
-
-    return bonus
-  }
-
-  getMatchedSymptoms(config) {
-    const matched = {
-      primary: [],
-      secondary: [],
-    }
-
-    config.primary.forEach((symptom) => {
-      if (this.knownFacts[symptom] === true) {
-        matched.primary.push(symptom)
-      }
-    })
-
-    config.secondary.forEach((symptom) => {
-      if (this.knownFacts[symptom] === true) {
-        matched.secondary.push(symptom)
-      }
-    })
-
-    return matched
-  }
-
+  // Get next question using backward chaining strategy
   getNextQuestion() {
-    if (this.shuffledQuestions.length === 0) {
-      this.initializeShuffledQuestions()
+    if (!this.currentHypothesis) {
+      return null
     }
 
-    let nextSymptom = null
+    const config = DISEASE_KNOWLEDGE_BASE[this.currentHypothesis]
 
-    // Strategy 1: Random questions for first 4 questions
-    if (this.askedQuestions.size < 4) {
-      for (const symptom of this.shuffledQuestions) {
-        if (!this.askedQuestions.has(symptom)) {
-          nextSymptom = symptom
-          break
+    // Strategy 1: Ask differential questions first
+    for (const question of config.differentialQuestions) {
+      if (!this.isQuestionAsked(question)) {
+        return {
+          question: question,
+          type: "differential",
+          hypothesis: this.currentHypothesis,
+          context: `Untuk mengkonfirmasi/mengeliminasi: ${this.currentHypothesis}`,
         }
       }
     }
 
-    // Strategy 2: Focus on top diseases after initial questions
-    if (!nextSymptom && this.askedQuestions.size >= 4) {
-      const topDiseases = Object.entries(this.diseaseScores)
-        .sort((a, b) => b[1].normalizedScore - a[1].normalizedScore)
-        .slice(0, 3)
-        .map(([disease]) => disease)
+    // Strategy 2: Ask about key symptoms
+    for (const symptom of config.keySymptoms) {
+      if (!this.knownFacts.has(symptom)) {
+        return {
+          question: this.getSymptomQuestion(symptom),
+          type: "key_symptom",
+          symptom: symptom,
+          hypothesis: this.currentHypothesis,
+          context: `Gejala kunci untuk: ${this.currentHypothesis}`,
+        }
+      }
+    }
 
-      const relevantQuestions = Object.keys(MEDICAL_SYMPTOMS).filter((symptom) => {
-        if (this.askedQuestions.has(symptom)) return false
+    // Strategy 3: Ask about excluding symptoms
+    for (const symptom of config.excludingSymptoms) {
+      if (!this.knownFacts.has(symptom)) {
+        return {
+          question: this.getSymptomQuestion(symptom),
+          type: "excluding_symptom",
+          symptom: symptom,
+          hypothesis: this.currentHypothesis,
+          context: `Untuk mengeliminasi: ${this.currentHypothesis}`,
+        }
+      }
+    }
 
-        return topDiseases.some((disease) => {
-          const config = RESPIRATORY_DISEASES[disease]
-          return config.primary.includes(symptom) || config.secondary.includes(symptom)
-        })
-      })
+    // Strategy 4: Ask about confirming symptoms
+    for (const symptom of config.confirmingSymptoms) {
+      if (!this.knownFacts.has(symptom)) {
+        return {
+          question: this.getSymptomQuestion(symptom),
+          type: "confirming_symptom",
+          symptom: symptom,
+          hypothesis: this.currentHypothesis,
+          context: `Gejala pendukung untuk: ${this.currentHypothesis}`,
+        }
+      }
+    }
 
-      if (relevantQuestions.length > 0) {
-        // Prioritize primary symptoms of top disease
-        const topDisease = topDiseases[0]
-        if (topDisease) {
-          const primarySymptoms = RESPIRATORY_DISEASES[topDisease].primary.filter(
-            (symptom) => !this.askedQuestions.has(symptom),
-          )
-          if (primarySymptoms.length > 0) {
-            nextSymptom = primarySymptoms[Math.floor(Math.random() * primarySymptoms.length)]
-          } else {
-            nextSymptom = relevantQuestions[Math.floor(Math.random() * relevantQuestions.length)]
+    return null
+  }
+
+  // Check if a question has been asked
+  isQuestionAsked(question) {
+    return this.questionHistory.some((q) => q.question === question)
+  }
+
+  // Get symptom question from knowledge base
+  getSymptomQuestion(symptom) {
+    const symptomQuestions = {
+      // Fever and systemic symptoms
+      demam_tinggi_38_5: "Apakah suhu tubuh Anda 38.5°C atau lebih tinggi?",
+      demam_mendadak_24jam: "Apakah demam muncul secara tiba-tiba dalam 24 jam terakhir?",
+      nyeri_otot_seluruh_tubuh: "Apakah seluruh otot tubuh terasa sangat nyeri dan pegal?",
+      kelelahan_sangat_berat: "Apakah Anda merasa sangat lelah hingga sulit bangkit dari tempat tidur?",
+      menggigil_hebat: "Apakah Anda menggigil hebat hingga tubuh gemetar tidak terkontrol?",
+      sakit_kepala_berat: "Apakah sakit kepala Anda sangat mengganggu dan berdenyut-denyut?",
+
+      // Nasal symptoms
+      hidung_berair_bening: "Apakah hidung mengeluarkan cairan bening dan encer seperti air?",
+      bersin_ringan: "Apakah Anda bersin sesekali (1-3 kali) dalam sehari?",
+      bersin_beruntun_5_lebih: "Apakah Anda bersin beruntun 5 kali atau lebih dalam satu episode?",
+      hidung_tersumbat_ringan: "Apakah hidung tersumbat ringan namun masih bisa bernapas?",
+      hidung_tersumbat_berat: "Apakah hidung tersumbat total sehingga harus bernapas melalui mulut?",
+      hidung_tersumbat_unilateral: "Apakah hidung tersumbat total hanya pada satu sisi?",
+      mata_gatal_berair: "Apakah mata gatal dan berair secara bersamaan?",
+      hidung_gatal_dalam: "Apakah bagian dalam hidung terasa sangat gatal?",
+
+      // Sinus symptoms
+      nyeri_wajah_pipi_dahi: "Apakah wajah terasa nyeri terutama di area pipi, dahi, atau sekitar mata?",
+      ingus_kental_kuning_hijau: "Apakah ingus kental dan berwarna kuning kehijauan?",
+      nyeri_bertambah_membungkuk: "Apakah nyeri kepala/wajah bertambah saat membungkuk?",
+      kehilangan_penciuman: "Apakah Anda kehilangan kemampuan mencium bau?",
+      nyeri_gigi_atas: "Apakah gigi bagian atas terasa nyeri atau ngilu?",
+
+      // Throat symptoms
+      sakit_tenggorokan_menelan: "Apakah rasa sakit tenggorokan sangat hebat saat menelan?",
+      tenggorokan_merah_bengkak: "Apakah tenggorokan terlihat merah dan bengkak?",
+      kesulitan_menelan_makanan: "Apakah kesulitan atau takut menelan makanan karena sakit?",
+      amandel_bengkak: "Apakah amandel (tonsil) tampak bengkak dan merah?",
+      kelenjar_leher_bengkab: "Apakah kelenjar getah bening di leher bengkak dan nyeri?",
+      bercak_putih_tenggorokan: "Apakah ada bercak putih atau kuning di tenggorokan?",
+
+      // Voice symptoms
+      suara_serak_parau: "Apakah suara serak, parau, atau berubah dari biasanya?",
+      kehilangan_suara: "Apakah kehilangan suara atau hanya bisa berbisik?",
+      batuk_kering_menggonggong: "Apakah batuk kering dan berbunyi seperti gonggongan?",
+      tenggorokan_kering_kasar: "Apakah tenggorokan terasa kering dan kasar seperti amplas?",
+
+      // Respiratory symptoms
+      batuk_produktif_dahak: "Apakah batuk mengeluarkan dahak yang kental?",
+      dahak_kuning_hijau: "Apakah dahak berwarna kuning kehijauan terutama di pagi hari?",
+      batuk_memburuk_malam: "Apakah batuk memburuk atau lebih sering di malam hari?",
+      batuk_dahak_berkarat: "Apakah dahak berwarna seperti karat besi atau kecoklatan?",
+      sesak_napas_istirahat: "Apakah sesak napas bahkan saat istirahat?",
+      sesak_napas_mendadak: "Apakah sesak napas muncul secara tiba-tiba?",
+      bunyi_mengi_ekspirasi: "Apakah ada bunyi 'ngik-ngik' saat mengeluarkan napas?",
+      nyeri_dada_napas_dalam: "Apakah dada terasa nyeri tajam saat menarik napas dalam?",
+
+      // Chronic symptoms
+      riwayat_merokok_lama: "Apakah memiliki riwayat merokok >10 tahun atau perokok berat?",
+      sesak_napas_progresif: "Apakah sesak napas semakin memburuk secara bertahap?",
+      batuk_kronik_pagi: "Apakah batuk berdahak kronik terutama pagi hari >3 bulan?",
+      dahak_purulen: "Apakah dahak kental, bernanah, dan berwarna kuning-hijau?",
+      riwayat_asma: "Apakah memiliki riwayat asma atau pernah didiagnosis asma?",
+    }
+
+    return symptomQuestions[symptom] || `Apakah Anda mengalami gejala: ${symptom}?`
+  }
+
+  // Process answer and update knowledge base
+  processAnswer(question, answer, questionData) {
+    this.questionsAsked++
+
+    // Record the answer
+    this.questionHistory.push({
+      question: question,
+      answer: answer,
+      type: questionData.type,
+      hypothesis: questionData.hypothesis,
+      timestamp: Date.now(),
+    })
+
+    // Update known facts if it's a symptom question
+    if (questionData.symptom) {
+      this.knownFacts.set(questionData.symptom, answer)
+    }
+
+    // Evaluate current hypothesis
+    this.evaluateCurrentHypothesis()
+
+    // Move to next hypothesis if current one is eliminated or confirmed
+    if (this.eliminatedDiseases.has(this.currentHypothesis) || this.confirmedDiseases.has(this.currentHypothesis)) {
+      this.moveToNextHypothesis()
+    }
+  }
+
+  // Evaluate current hypothesis based on known facts
+  evaluateCurrentHypothesis() {
+    if (!this.currentHypothesis) return
+
+    const config = DISEASE_KNOWLEDGE_BASE[this.currentHypothesis]
+    let keySymptomMatches = 0
+    let keySymptomTotal = 0
+    let excludingSymptomPresent = false
+
+    // Check key symptoms
+    config.keySymptoms.forEach((symptom) => {
+      if (this.knownFacts.has(symptom)) {
+        keySymptomTotal++
+        if (this.knownFacts.get(symptom)) {
+          keySymptomMatches++
+        }
+      }
+    })
+
+    // Check excluding symptoms
+    config.excludingSymptoms.forEach((symptom) => {
+      if (this.knownFacts.has(symptom) && this.knownFacts.get(symptom)) {
+        excludingSymptomPresent = true
+      }
+    })
+
+    // Elimination criteria
+    if (excludingSymptomPresent) {
+      this.eliminatedDiseases.add(this.currentHypothesis)
+      return
+    }
+
+    // If we have enough information about key symptoms
+    if (keySymptomTotal >= Math.min(3, config.keySymptoms.length)) {
+      const keySymptomRatio = keySymptomMatches / keySymptomTotal
+
+      if (keySymptomRatio < 0.3) {
+        this.eliminatedDiseases.add(this.currentHypothesis)
+      } else if (keySymptomRatio >= 0.7 && keySymptomMatches >= 2) {
+        // Additional confirmation for high-confidence diagnosis
+        let confirmingMatches = 0
+        let confirmingTotal = 0
+
+        config.confirmingSymptoms.forEach((symptom) => {
+          if (this.knownFacts.has(symptom)) {
+            confirmingTotal++
+            if (this.knownFacts.get(symptom)) {
+              confirmingMatches++
+            }
           }
+        })
+
+        if (confirmingTotal === 0 || confirmingMatches / confirmingTotal >= 0.5) {
+          this.confirmedDiseases.add(this.currentHypothesis)
         }
       }
     }
+  }
 
-    // Strategy 3: Random remaining questions
-    if (!nextSymptom) {
-      const unaskedQuestions = Object.keys(MEDICAL_SYMPTOMS).filter((symptom) => !this.askedQuestions.has(symptom))
-      if (unaskedQuestions.length > 0) {
-        nextSymptom = unaskedQuestions[Math.floor(Math.random() * unaskedQuestions.length)]
+  // Move to next hypothesis
+  moveToNextHypothesis() {
+    const remainingHypotheses = this.hypotheses.filter(
+      (h) => !this.eliminatedDiseases.has(h) && !this.confirmedDiseases.has(h),
+    )
+
+    this.currentHypothesis = remainingHypotheses.length > 0 ? remainingHypotheses[0] : null
+  }
+
+  // Check if diagnosis should continue
+  shouldContinue() {
+    // Stop if we have a confirmed diagnosis
+    if (this.confirmedDiseases.size > 0) {
+      return false
+    }
+
+    // Stop if no more hypotheses to test
+    if (!this.currentHypothesis) {
+      return false
+    }
+
+    // Stop if we've asked too many questions
+    if (this.questionsAsked >= 15) {
+      return false
+    }
+
+    return true
+  }
+
+  // Get diagnosis result
+  getDiagnosisResult() {
+    if (this.confirmedDiseases.size > 0) {
+      return {
+        type: "confirmed",
+        disease: Array.from(this.confirmedDiseases)[0],
+        confidence: "high",
       }
     }
 
-    return nextSymptom
-  }
+    // If no confirmed diagnosis, return the most likely remaining hypothesis
+    const remainingHypotheses = this.hypotheses.filter((h) => !this.eliminatedDiseases.has(h))
 
-  getBestDiagnosis() {
-    const validDiagnoses = Object.entries(this.diseaseScores)
-      .filter(([_, data]) => data.meetsMinimum && data.confidence > 0.25)
-      .sort((a, b) => b[1].normalizedScore - a[1].normalizedScore)
-
-    return validDiagnoses.length > 0 ? validDiagnoses[0] : null
-  }
-
-  getTopDiagnoses(count = 3) {
-    return Object.entries(this.diseaseScores)
-      .filter(([_, data]) => data.normalizedScore > 0.1)
-      .sort((a, b) => b[1].normalizedScore - a[1].normalizedScore)
-      .slice(0, count)
-  }
-
-  shouldContinueAsking() {
-    const maxQuestions = 20
-    const minQuestions = 8
-
-    if (this.askedQuestions.size < minQuestions) return true
-    if (this.askedQuestions.size >= maxQuestions) return false
-
-    const bestDiagnosis = this.getBestDiagnosis()
-    if (!bestDiagnosis) return true
-
-    const [_, data] = bestDiagnosis
-
-    // Continue if confidence is low or score is not decisive
-    return data.confidence < 0.6 || data.normalizedScore < 0.7
-  }
-
-  reset() {
-    this.knownFacts = {}
-    this.askedQuestions.clear()
-    this.diseaseScores = {}
-    this.questionHistory = []
-    this.positiveSymptoms.clear()
-    this.shuffledQuestions = []
-    this.currentQuestion = null
-    this.questionsAsked = 0
-    this.isProcessing = false
-  }
-
-  getDebugInfo() {
-    return {
-      knownFacts: this.knownFacts,
-      diseaseScores: this.diseaseScores,
-      askedQuestions: Array.from(this.askedQuestions),
-      positiveSymptoms: Array.from(this.positiveSymptoms),
-      questionHistory: this.questionHistory,
-      totalPositiveSymptoms: this.positiveSymptoms.size,
+    if (remainingHypotheses.length > 0) {
+      return {
+        type: "probable",
+        disease: remainingHypotheses[0],
+        confidence: "moderate",
+        alternatives: remainingHypotheses.slice(1, 3),
+      }
     }
+
+    return {
+      type: "inconclusive",
+      eliminated: Array.from(this.eliminatedDiseases),
+    }
+  }
+
+  // Get current status
+  getStatus() {
+    return {
+      currentHypothesis: this.currentHypothesis,
+      eliminatedCount: this.eliminatedDiseases.size,
+      remainingCount: this.hypotheses.length - this.eliminatedDiseases.size - this.confirmedDiseases.size,
+      questionsAsked: this.questionsAsked,
+      hypotheses: this.hypotheses,
+      eliminated: Array.from(this.eliminatedDiseases),
+      confirmed: Array.from(this.confirmedDiseases),
+    }
+  }
+
+  // Reset system
+  reset() {
+    this.knownFacts.clear()
+    this.hypotheses = []
+    this.eliminatedDiseases.clear()
+    this.confirmedDiseases.clear()
+    this.currentHypothesis = null
+    this.questionHistory = []
+    this.questionsAsked = 0
+    this.initialSymptoms = []
   }
 }
 
-// Treatment recommendations
+// Treatment recommendations (same as before)
 const TREATMENT_RECOMMENDATIONS = {
-  "Pilek Biasa (Common Cold)": {
+  "Pilek Biasa": {
     treatment:
-      "Istirahat 3-5 hari, minum cairan hangat 2-3 liter/hari, paracetamol 500mg setiap 6 jam untuk nyeri kepala. Semprot hidung saline 3-4x/hari. Madu 1 sendok teh untuk batuk (tidak untuk bayi <1 tahun).",
+      "Istirahat 3-5 hari, minum cairan hangat 2-3 liter/hari, paracetamol 500mg setiap 6 jam untuk nyeri kepala. Semprot hidung saline 3-4x/hari.",
     warning: "Konsultasi dokter jika gejala memburuk setelah 7 hari, demam >38.5°C, atau muncul sesak napas.",
-    prevention:
-      "Cuci tangan teratur 20 detik dengan sabun, hindari menyentuh wajah, jaga jarak 1 meter dari orang sakit.",
+    prevention: "Cuci tangan teratur, hindari menyentuh wajah, jaga jarak dari orang sakit.",
   },
-  "Influenza (Flu)": {
+  Influenza: {
     treatment:
-      "Istirahat total di tempat tidur 7-10 hari, minum cairan 3-4 liter/hari, paracetamol 500mg setiap 6 jam. Oseltamivir (Tamiflu) dalam 48 jam pertama jika tersedia. Hindari aspirin pada anak <18 tahun.",
-    warning: "SEGERA ke dokter jika: demam >39°C >3 hari, sesak napas, nyeri dada, dehidrasi berat, atau kebingungan.",
-    prevention: "Vaksinasi flu tahunan (efektivitas 40-60%), hindari kerumunan saat musim flu, masker di tempat umum.",
+      "Istirahat total 7-10 hari, minum cairan 3-4 liter/hari, paracetamol 500mg setiap 6 jam. Oseltamivir dalam 48 jam pertama jika tersedia.",
+    warning: "SEGERA ke dokter jika: demam >39°C >3 hari, sesak napas, nyeri dada, dehidrasi berat.",
+    prevention: "Vaksinasi flu tahunan, hindari kerumunan saat musim flu, masker di tempat umum.",
   },
-  "Rinitis Alergi (Allergic Rhinitis)": {
+  "Rinitis Alergi": {
     treatment:
-      "Hindari alergen pemicu, antihistamin oral (loratadine 10mg/hari atau cetirizine 10mg/hari), semprot hidung kortikosteroid (fluticasone), semprot hidung saline. Bersihkan rumah dari debu tungau.",
-    warning:
-      "Konsultasi dokter jika gejala mengganggu tidur/aktivitas, tidak membaik dengan antihistamin, atau muncul gejala asma.",
-    prevention:
-      "Identifikasi alergen dengan tes kulit, gunakan air purifier HEPA, cuci sprei 60°C seminggu sekali, hindari karpet tebal.",
+      "Hindari alergen, antihistamin oral (loratadine 10mg/hari), semprot hidung kortikosteroid, semprot hidung saline.",
+    warning: "Konsultasi dokter jika gejala mengganggu tidur/aktivitas atau muncul gejala asma.",
+    prevention: "Identifikasi alergen dengan tes kulit, gunakan air purifier HEPA, hindari karpet tebal.",
   },
   "Sinusitis Akut": {
     treatment:
-      "Kompres hangat wajah 15-20 menit 3x/hari, semprot hidung saline hipertonik, posisi tidur kepala lebih tinggi. Paracetamol untuk nyeri. Antibiotik (amoxicillin 500mg 3x/hari) jika gejala >10 hari atau memburuk.",
-    warning:
-      "SEGERA ke dokter jika: nyeri wajah hebat, demam tinggi, pembengkakan wajah, gangguan penglihatan, atau sakit kepala berat.",
-    prevention: "Obati pilek dengan baik, jaga kelembaban udara 40-50%, hindari asap rokok, vaksinasi pneumokokus.",
+      "Kompres hangat wajah 15-20 menit 3x/hari, semprot hidung saline hipertonik, posisi tidur kepala tinggi. Antibiotik jika gejala >10 hari.",
+    warning: "SEGERA ke dokter jika: nyeri wajah hebat, demam tinggi, pembengkakan wajah, gangguan penglihatan.",
+    prevention: "Obati pilek dengan baik, jaga kelembaban udara 40-50%, hindari asap rokok.",
   },
   "Bronkitis Akut": {
-    treatment:
-      "Istirahat, minum air hangat 2-3 liter/hari, madu untuk batuk, humidifier untuk melembabkan udara. Hindari asap rokok. Ekspektorasi dahak dengan batuk efektif. Bronkodilator jika ada mengi.",
+    treatment: "Istirahat, minum air hangat 2-3 liter/hari, madu untuk batuk, humidifier. Hindari asap rokok.",
     warning: "Ke dokter jika: sesak napas, dahak berdarah, demam tinggi >3 hari, atau batuk >3 minggu.",
     prevention:
       "Hindari merokok dan asap rokok, vaksinasi influenza tahunan, cuci tangan teratur, hindari polusi udara.",
   },
   "Faringitis Akut": {
     treatment:
-      "Berkumur air garam hangat (1/2 sdt garam dalam 1 gelas air) 4-6x/hari, minum air hangat, hindari makanan pedas/asam. Paracetamol untuk nyeri. Antibiotik (amoxicillin) jika strep throat terkonfirmasi.",
-    warning:
-      "Ke dokter jika: kesulitan menelan berat, air liur berlebihan, demam tinggi, bercak putih di tenggorokan, atau pembengkakan leher.",
+      "Berkumur air garam hangat 4-6x/hari, minum air hangat, hindari makanan pedas/asam. Paracetamol untuk nyeri. Antibiotik jika strep throat terkonfirmasi.",
+    warning: "Ke dokter jika: kesulitan menelan berat, air liur berlebihan, demam tinggi, bercak putih di tenggorokan.",
     prevention:
       "Hindari berbagi alat makan/minum, jaga kebersihan mulut, hindari kontak dengan penderita strep throat.",
   },
   "Laringitis Akut": {
     treatment:
-      "Istirahat suara total 2-3 hari (berbisik juga tidak dianjurkan), minum air hangat, hindari kafein/alkohol, humidifier, hindari berdehem. Kortikosteroid jika diperlukan untuk profesi suara.",
+      "Istirahat suara total 2-3 hari, minum air hangat, hindari kafein/alkohol, humidifier, hindari berdehem.",
     warning: "Konsultasi dokter jika: kehilangan suara >2 minggu, kesulitan menelan, sesak napas, atau demam tinggi.",
-    prevention:
-      "Hindari berteriak/berbicara keras berlebihan, jaga kelembaban tenggorokan, hindari asap rokok dan iritasi.",
+    prevention: "Hindari berteriak/berbicara keras berlebihan, jaga kelembaban tenggorokan, hindari asap rokok.",
   },
-  "Pneumonia Ringan (Community-Acquired)": {
+  "Pneumonia Ringan": {
     treatment:
-      "WAJIB konsultasi dokter untuk antibiotik yang tepat. Istirahat total, minum cairan 3-4 liter/hari, paracetamol untuk demam. Fisioterapi dada untuk ekspektorasi. Monitor saturasi oksigen.",
-    warning:
-      "SEGERA ke IGD jika: sesak napas berat, saturasi oksigen <95%, kebingungan, tekanan darah turun, atau tidak membaik dalam 48-72 jam antibiotik.",
+      "WAJIB konsultasi dokter untuk antibiotik yang tepat. Istirahat total, minum cairan 3-4 liter/hari, paracetamol untuk demam.",
+    warning: "SEGERA ke IGD jika: sesak napas berat, saturasi oksigen <95%, kebingungan, tekanan darah turun.",
     prevention:
       "Vaksinasi pneumokokus (terutama >65 tahun), vaksinasi influenza, hindari merokok, jaga kebersihan tangan.",
   },
   "Asma Eksaserbasi": {
     treatment:
-      "Bronkodilator kerja cepat (salbutamol inhaler 2-4 puff setiap 20 menit), posisi duduk tegak, hindari pemicu, kortikosteroid oral jika berat. Gunakan spacer untuk inhaler.",
+      "Bronkodilator kerja cepat (salbutamol inhaler 2-4 puff setiap 20 menit), posisi duduk tegak, hindari pemicu.",
     warning:
       "SEGERA ke IGD jika: tidak bisa bicara kalimat penuh, saturasi oksigen <95%, sianosis, atau tidak membaik dengan bronkodilator.",
     prevention:
       "Identifikasi dan hindari pemicu, gunakan controller medication teratur, peak flow monitoring, action plan tertulis.",
   },
-  "PPOK Eksaserbasi (COPD)": {
+  "PPOK Eksaserbasi": {
     treatment:
-      "WAJIB konsultasi dokter. Bronkodilator kerja cepat, kortikosteroid oral (prednisolone 30-40mg/hari 5-7 hari), antibiotik jika dahak purulen. Oksigen jika saturasi <88-92%.",
+      "WAJIB konsultasi dokter. Bronkodilator kerja cepat, kortikosteroid oral, antibiotik jika dahak purulen. Oksigen jika saturasi <88-92%.",
     warning: "SEGERA ke IGD jika: sesak napas berat, sianosis, kebingungan, edema tungkai baru, atau gagal napas.",
     prevention:
       "BERHENTI MEROKOK (paling penting), vaksinasi influenza dan pneumokokus, rehabilitasi paru, hindari polusi udara.",
@@ -683,10 +575,12 @@ const TREATMENT_RECOMMENDATIONS = {
 }
 
 // Main Application Class
-class ProgressiveDiagnosisApp {
+class BackwardChainingDiagnosisApp {
   constructor() {
-    this.diagnosisSystem = new ProgressiveDiagnosisSystem()
+    this.diagnosisSystem = new BackwardChainingDiagnosisSystem()
     this.currentStep = "welcome"
+    this.selectedInitialSymptoms = []
+    this.currentQuestionData = null
     this.initializeElements()
     this.bindEvents()
   }
@@ -694,23 +588,32 @@ class ProgressiveDiagnosisApp {
   initializeElements() {
     // Screens
     this.welcomeScreen = document.getElementById("welcome-screen")
+    this.initialScreen = document.getElementById("initial-screen")
     this.diagnosisScreen = document.getElementById("diagnosis-screen")
     this.resultScreen = document.getElementById("result-screen")
 
     // Welcome screen
     this.startButton = document.getElementById("start-diagnosis")
 
+    // Initial symptoms screen
+    this.symptomButtons = document.querySelectorAll(".symptom-btn")
+    this.selectedSymptomsDiv = document.getElementById("selected-symptoms")
+    this.selectedList = document.getElementById("selected-list")
+    this.continueButton = document.getElementById("continue-diagnosis")
+
     // Diagnosis screen
     this.questionCounter = document.getElementById("question-counter")
     this.progressPercentage = document.getElementById("progress-percentage")
     this.progressFill = document.getElementById("progress-fill")
+    this.currentHypothesisSpan = document.getElementById("current-hypothesis")
+    this.eliminatedCount = document.getElementById("eliminated-count")
+    this.remainingCount = document.getElementById("remaining-count")
+    this.currentHypothesisDetail = document.getElementById("current-hypothesis-detail")
     this.currentQuestionElement = document.getElementById("current-question")
-    this.positiveCount = document.getElementById("positive-count")
-    this.topDisease = document.getElementById("top-disease")
+    this.questionContext = document.getElementById("question-context")
     this.answerYesButton = document.getElementById("answer-yes")
     this.answerNoButton = document.getElementById("answer-no")
-    this.analysisPanel = document.getElementById("analysis-panel")
-    this.diseaseProbabilities = document.getElementById("disease-probabilities")
+    this.diseaseStatus = document.getElementById("disease-status")
 
     // Result screen
     this.resultIcon = document.getElementById("result-icon")
@@ -720,7 +623,13 @@ class ProgressiveDiagnosisApp {
   }
 
   bindEvents() {
-    this.startButton.addEventListener("click", () => this.startDiagnosis())
+    this.startButton.addEventListener("click", () => this.startInitialScreening())
+
+    this.symptomButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => this.toggleSymptom(e.target))
+    })
+
+    this.continueButton.addEventListener("click", () => this.startBackwardChaining())
     this.answerYesButton.addEventListener("click", () => this.answerQuestion(true))
     this.answerNoButton.addEventListener("click", () => this.answerQuestion(false))
     this.resetButton.addEventListener("click", () => this.resetDiagnosis())
@@ -737,168 +646,191 @@ class ProgressiveDiagnosisApp {
     this.currentStep = screenName
   }
 
-  startDiagnosis() {
+  startInitialScreening() {
+    this.showScreen("initial")
+    this.selectedInitialSymptoms = []
+    this.updateSelectedSymptoms()
+  }
+
+  toggleSymptom(button) {
+    const symptom = button.dataset.symptom
+
+    if (button.classList.contains("selected")) {
+      button.classList.remove("selected")
+      this.selectedInitialSymptoms = this.selectedInitialSymptoms.filter((s) => s !== symptom)
+    } else {
+      button.classList.add("selected")
+      this.selectedInitialSymptoms.push(symptom)
+    }
+
+    this.updateSelectedSymptoms()
+  }
+
+  updateSelectedSymptoms() {
+    if (this.selectedInitialSymptoms.length > 0) {
+      this.selectedSymptomsDiv.style.display = "block"
+
+      this.selectedList.innerHTML = this.selectedInitialSymptoms
+        .map((symptom) => {
+          const button = document.querySelector(`[data-symptom="${symptom}"]`)
+          return `<span class="selected-tag">
+          <i class="${button.querySelector("i").className}"></i>
+          ${button.textContent.trim()}
+        </span>`
+        })
+        .join("")
+    } else {
+      this.selectedSymptomsDiv.style.display = "none"
+    }
+  }
+
+  startBackwardChaining() {
+    if (this.selectedInitialSymptoms.length === 0) {
+      alert("Silakan pilih minimal satu gejala untuk memulai diagnosis.")
+      return
+    }
+
     this.showScreen("diagnosis")
     this.diagnosisSystem.reset()
+    this.diagnosisSystem.initializeHypotheses(this.selectedInitialSymptoms)
     this.askNextQuestion()
   }
 
   async askNextQuestion() {
-    const nextSymptom = this.diagnosisSystem.getNextQuestion()
+    const questionData = this.diagnosisSystem.getNextQuestion()
 
-    if (!nextSymptom || !this.diagnosisSystem.shouldContinueAsking()) {
+    if (!questionData || !this.diagnosisSystem.shouldContinue()) {
       await this.showResult()
       return
     }
 
-    this.diagnosisSystem.currentQuestion = nextSymptom
-    this.diagnosisSystem.questionsAsked++
-
+    this.currentQuestionData = questionData
     this.updateQuestionDisplay()
     this.updateProgress()
-    this.updateRealTimeAnalysis()
+    this.updateHypothesisDisplay()
+    this.updateEliminationPanel()
   }
 
   updateQuestionDisplay() {
-    const symptom = this.diagnosisSystem.currentQuestion
-    const question = MEDICAL_SYMPTOMS[symptom]
+    this.currentQuestionElement.textContent = this.currentQuestionData.question
+    this.questionContext.textContent = this.currentQuestionData.context || ""
 
-    this.currentQuestionElement.textContent = question
     this.currentQuestionElement.classList.add("fade-in")
-
     setTimeout(() => {
       this.currentQuestionElement.classList.remove("fade-in")
     }, 500)
   }
 
   updateProgress() {
-    const maxQuestions = 20
+    const maxQuestions = 15
     const progress = Math.min((this.diagnosisSystem.questionsAsked / maxQuestions) * 100, 95)
 
-    this.questionCounter.textContent = `Pertanyaan ${this.diagnosisSystem.questionsAsked}`
+    this.questionCounter.textContent = `Pertanyaan ${this.diagnosisSystem.questionsAsked + 1}`
     this.progressPercentage.textContent = `${Math.round(progress)}%`
     this.progressFill.style.width = `${progress}%`
-    this.positiveCount.textContent = this.diagnosisSystem.positiveSymptoms.size
+  }
 
-    // Update top disease
-    const topDiagnoses = this.diagnosisSystem.getTopDiagnoses(1)
-    if (topDiagnoses.length > 0) {
-      const [diseaseName] = topDiagnoses[0]
-      this.topDisease.textContent = diseaseName.split(" ")[0] // Show first word only
-    } else {
-      this.topDisease.textContent = "Menganalisis..."
+  updateHypothesisDisplay() {
+    const status = this.diagnosisSystem.getStatus()
+
+    this.currentHypothesisSpan.textContent = status.currentHypothesis || "Selesai"
+    this.eliminatedCount.textContent = status.eliminatedCount
+    this.remainingCount.textContent = status.remainingCount
+
+    if (status.currentHypothesis) {
+      const config = DISEASE_KNOWLEDGE_BASE[status.currentHypothesis]
+      this.currentHypothesisDetail.innerHTML = `
+        <div class="hypothesis-detail">
+          <strong><i class="${config.icon}"></i> ${status.currentHypothesis}</strong>
+          <p style="margin-top: 5px; font-size: 0.9rem;">
+            Sistem sedang menguji hipotesis ini dengan pertanyaan yang ditargetkan untuk mengkonfirmasi atau mengeliminasi diagnosis.
+          </p>
+        </div>
+      `
     }
   }
 
-  updateRealTimeAnalysis() {
-    const topDiagnoses = this.diagnosisSystem.getTopDiagnoses(5)
-
-    if (topDiagnoses.length === 0) {
-      this.diseaseProbabilities.innerHTML =
-        '<p style="text-align: center; color: #6c757d;">Belum ada data cukup untuk analisis</p>'
-      return
-    }
-
+  updateEliminationPanel() {
+    const status = this.diagnosisSystem.getStatus()
     let html = ""
-    topDiagnoses.forEach(([diseaseName, data]) => {
-      const percentage = Math.round(data.normalizedScore * 100)
-      const confidence = Math.round(data.confidence * 100)
+
+    status.hypotheses.forEach((disease) => {
+      let statusClass, statusText
+
+      if (status.confirmed.includes(disease)) {
+        statusClass = "status-confirmed"
+        statusText = "Terkonfirmasi"
+      } else if (status.eliminated.includes(disease)) {
+        statusClass = "status-eliminated"
+        statusText = "Dieliminasi"
+      } else {
+        statusClass = "status-active"
+        statusText = disease === status.currentHypothesis ? "Sedang Diuji" : "Menunggu"
+      }
 
       html += `
-        <div class="probability-item">
-          <div class="disease-name">${diseaseName}</div>
-          <div class="probability-bar">
-            <div class="probability-fill" style="width: ${percentage}%"></div>
-          </div>
-          <div class="probability-percentage">${percentage}%</div>
+        <div class="disease-status-item">
+          <div class="disease-name">${disease}</div>
+          <div class="disease-status ${statusClass}">${statusText}</div>
         </div>
       `
     })
 
-    this.diseaseProbabilities.innerHTML = html
+    this.diseaseStatus.innerHTML = html
   }
 
   async answerQuestion(answer) {
-    if (this.diagnosisSystem.isProcessing) return
-
-    this.diagnosisSystem.isProcessing = true
+    if (!this.currentQuestionData) return
 
     // Visual feedback
     const buttons = [this.answerYesButton, this.answerNoButton]
     buttons.forEach((btn) => btn.classList.add("loading"))
 
-    if (this.diagnosisSystem.currentQuestion) {
-      this.diagnosisSystem.setKnownFact(this.diagnosisSystem.currentQuestion, answer)
-    }
+    this.diagnosisSystem.processAnswer(this.currentQuestionData.question, answer, this.currentQuestionData)
 
     // Simulate processing time
     await new Promise((resolve) => setTimeout(resolve, 800))
 
     buttons.forEach((btn) => btn.classList.remove("loading"))
-    this.diagnosisSystem.isProcessing = false
-
     this.askNextQuestion()
   }
 
   async showResult() {
     this.showScreen("result")
+    const result = this.diagnosisSystem.getDiagnosisResult()
 
-    const bestDiagnosis = this.diagnosisSystem.getBestDiagnosis()
-    const debugInfo = this.diagnosisSystem.getDebugInfo()
-
-    if (bestDiagnosis) {
-      const [diseaseName, data] = bestDiagnosis
-      this.showPositiveDiagnosis(diseaseName, data, debugInfo)
+    if (result.type === "confirmed") {
+      this.showConfirmedDiagnosis(result)
+    } else if (result.type === "probable") {
+      this.showProbableDiagnosis(result)
     } else {
-      this.showNoDiagnosis(debugInfo)
+      this.showInconclusiveDiagnosis(result)
     }
   }
 
-  showPositiveDiagnosis(diseaseName, data, debugInfo) {
-    const diseaseConfig = RESPIRATORY_DISEASES[diseaseName]
-    const iconClass = diseaseConfig.icon
+  showConfirmedDiagnosis(result) {
+    const disease = result.disease
+    const config = DISEASE_KNOWLEDGE_BASE[disease]
+    const treatment = TREATMENT_RECOMMENDATIONS[disease]
 
-    this.resultIcon.innerHTML = `<i class="${iconClass}"></i>`
-
-    const treatment = TREATMENT_RECOMMENDATIONS[diseaseName]
-    const confidence = Math.round(data.confidence * 100)
-    const matchedSymptoms = data.matchedSymptoms
-
-    // Create matched symptoms display
-    let symptomsHtml = ""
-    if (matchedSymptoms.primary.length > 0) {
-      symptomsHtml += `<strong>Gejala Utama yang Cocok:</strong><br>`
-      matchedSymptoms.primary.forEach((symptom) => {
-        symptomsHtml += `• ${MEDICAL_SYMPTOMS[symptom]}<br>`
-      })
-    }
-    if (matchedSymptoms.secondary.length > 0) {
-      symptomsHtml += `<br><strong>Gejala Pendukung yang Cocok:</strong><br>`
-      matchedSymptoms.secondary.forEach((symptom) => {
-        symptomsHtml += `• ${MEDICAL_SYMPTOMS[symptom]}<br>`
-      })
-    }
+    this.resultIcon.innerHTML = `<i class="${config.icon}"></i>`
 
     this.resultContent.innerHTML = `
       <div class="diagnosis-result">
-        <div class="diagnosis-title">Diagnosis yang Paling Sesuai:</div>
-        <div class="diagnosis-name">${diseaseName}</div>
-        <div class="confidence-level">Tingkat Keyakinan: ${confidence}%</div>
-        <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.9;">
-          <strong>Fakta Medis:</strong> ${diseaseConfig.facts}
-        </div>
-        <div style="margin-top: 10px; font-size: 0.85rem; opacity: 0.8;">
-          <strong>Prevalensi:</strong> ${diseaseConfig.prevalence}
-        </div>
+        <div class="diagnosis-title">Diagnosis Terkonfirmasi (Backward Chaining):</div>
+        <div class="diagnosis-name">${disease}</div>
+        <div class="confidence-level">Tingkat Keyakinan: Tinggi (${result.confidence})</div>
       </div>
       
       <div class="symptom-match">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
           <i class="fas fa-check-double"></i>
-          <strong>Gejala yang Cocok dengan Diagnosis:</strong>
+          <strong>Metode Backward Chaining Berhasil:</strong>
         </div>
         <div style="font-size: 0.9rem; line-height: 1.6;">
-          ${symptomsHtml}
+          Sistem memulai dengan hipotesis <strong>${disease}</strong> berdasarkan gejala awal Anda, 
+          kemudian mengajukan pertanyaan yang ditargetkan untuk mengkonfirmasi diagnosis ini.
+          Semua kriteria kunci telah terpenuhi.
         </div>
       </div>
       
@@ -927,75 +859,142 @@ class ProgressiveDiagnosisApp {
       </div>
       
       <div class="analysis-summary">
-        <i class="fas fa-chart-bar"></i>
-        <strong>Ringkasan Analisis:</strong> Dari ${debugInfo.questionHistory.length} pertanyaan medis, 
-        sistem menemukan ${debugInfo.totalPositiveSymptoms} gejala positif yang cocok dengan pola ${diseaseName}.
-        Diagnosis ini berdasarkan ${matchedSymptoms.primary.length} gejala utama dan ${matchedSymptoms.secondary.length} gejala pendukung.
+        <i class="fas fa-brain"></i>
+        <strong>Analisis Backward Chaining:</strong> Sistem menggunakan ${this.diagnosisSystem.questionsAsked} pertanyaan 
+        yang ditargetkan untuk mengkonfirmasi hipotesis ${disease}. Metode ini lebih efisien dibandingkan forward chaining 
+        karena fokus pada eliminasi dan konfirmasi hipotesis spesifik.
       </div>
     `
   }
 
-  showNoDiagnosis(debugInfo) {
-    this.resultIcon.innerHTML = '<i class="fas fa-question-circle"></i>'
+  showProbableDiagnosis(result) {
+    const disease = result.disease
+    const config = DISEASE_KNOWLEDGE_BASE[disease]
+    const treatment = TREATMENT_RECOMMENDATIONS[disease]
 
-    // Show top possibilities even if no definitive diagnosis
-    const topDiagnoses = this.diagnosisSystem.getTopDiagnoses(3)
-    let possibilitiesHtml = ""
+    this.resultIcon.innerHTML = `<i class="${config.icon}"></i>`
 
-    if (topDiagnoses.length > 0) {
-      possibilitiesHtml = '<div style="margin-top: 15px;"><strong>Kemungkinan yang Perlu Dipertimbangkan:</strong><br>'
-      topDiagnoses.forEach(([diseaseName, data]) => {
-        const percentage = Math.round(data.normalizedScore * 100)
-        possibilitiesHtml += `• ${diseaseName}: ${percentage}% kesesuaian<br>`
-      })
-      possibilitiesHtml += "</div>"
+    let alternativesHtml = ""
+    if (result.alternatives && result.alternatives.length > 0) {
+      alternativesHtml = `
+        <div style="margin-top: 15px;">
+          <strong>Diagnosis Alternatif yang Perlu Dipertimbangkan:</strong><br>
+          ${result.alternatives.map((alt) => `• ${alt}`).join("<br>")}
+        </div>
+      `
     }
 
     this.resultContent.innerHTML = `
-      <div class="info-box info-success">
+      <div class="diagnosis-result">
+        <div class="diagnosis-title">Diagnosis Paling Mungkin (Backward Chaining):</div>
+        <div class="diagnosis-name">${disease}</div>
+        <div class="confidence-level">Tingkat Keyakinan: ${result.confidence === "moderate" ? "Sedang" : "Rendah"}</div>
+      </div>
+      
+      <div class="info-box info-primary">
         <i class="fas fa-info-circle"></i>
         <div>
-          <strong>Tidak Ada Diagnosis Definitif</strong><br>
-          Berdasarkan gejala yang Anda berikan, tidak ditemukan pola yang cukup kuat untuk menunjukkan 
-          salah satu dari 10 penyakit pernapasan umum yang ada dalam sistem.
-          ${possibilitiesHtml}
+          <strong>Hasil Analisis Backward Chaining:</strong><br>
+          Berdasarkan eliminasi bertahap dari ${this.diagnosisSystem.getStatus().eliminatedCount} penyakit lain, 
+          <strong>${disease}</strong> adalah diagnosis yang paling sesuai dengan pola gejala Anda.
+          ${alternativesHtml}
+        </div>
+      </div>
+      
+      <div class="info-box info-primary">
+        <i class="fas fa-medkit"></i>
+        <div>
+          <strong>Rekomendasi Pengobatan:</strong><br>
+          ${treatment.treatment}
+        </div>
+      </div>
+      
+      <div class="info-box info-warning">
+        <i class="fas fa-user-md"></i>
+        <div>
+          <strong>Rekomendasi Medis:</strong><br>
+          Karena tingkat keyakinan sedang, disarankan untuk berkonsultasi dengan dokter untuk konfirmasi diagnosis 
+          dan pemeriksaan lebih lanjut. ${treatment.warning}
+        </div>
+      </div>
+      
+      <div class="analysis-summary">
+        <i class="fas fa-brain"></i>
+        <strong>Proses Backward Chaining:</strong> Sistem mengeliminasi ${this.diagnosisSystem.getStatus().eliminatedCount} 
+        penyakit dari ${this.diagnosisSystem.getStatus().hypotheses.length} hipotesis awal menggunakan 
+        ${this.diagnosisSystem.questionsAsked} pertanyaan strategis.
+      </div>
+    `
+  }
+
+  showInconclusiveDiagnosis(result) {
+    this.resultIcon.innerHTML = '<i class="fas fa-question-circle"></i>'
+
+    const eliminatedList = result.eliminated.map((disease) => `• ${disease}`).join("<br>")
+
+    this.resultContent.innerHTML = `
+      <div class="info-box info-warning">
+        <i class="fas fa-search"></i>
+        <div>
+          <strong>Hasil Backward Chaining: Tidak Konklusif</strong><br>
+          Sistem telah mengeliminasi beberapa penyakit berdasarkan gejala yang tidak sesuai, 
+          namun tidak dapat mengkonfirmasi diagnosis spesifik dengan keyakinan yang cukup.
+        </div>
+      </div>
+      
+      <div class="info-box info-secondary">
+        <i class="fas fa-times-circle"></i>
+        <div>
+          <strong>Penyakit yang Telah Dieliminasi:</strong><br>
+          ${eliminatedList}
         </div>
       </div>
       
       <div class="info-box info-primary">
         <i class="fas fa-user-md"></i>
         <div>
-          <strong>Rekomendasi:</strong> Jika gejala berlanjut lebih dari 7 hari, memburuk, atau mengganggu 
-          aktivitas sehari-hari, disarankan untuk berkonsultasi dengan dokter untuk pemeriksaan lebih lanjut 
-          dan kemungkinan tes diagnostik tambahan.
+          <strong>Rekomendasi:</strong><br>
+          • Konsultasi dengan dokter untuk pemeriksaan fisik dan tes diagnostik tambahan<br>
+          • Kemungkinan kondisi yang tidak tercakup dalam sistem ini<br>
+          • Gejala mungkin masih dalam tahap awal perkembangan<br>
+          • Kombinasi beberapa kondisi ringan
         </div>
       </div>
       
-      <div class="info-box info-secondary">
+      <div class="info-box info-success">
         <i class="fas fa-lightbulb"></i>
         <div>
-          <strong>Kemungkinan Lain:</strong> Gejala mungkin disebabkan oleh kondisi yang tidak tercakup 
-          dalam sistem ini, kombinasi beberapa kondisi ringan, atau masih dalam tahap awal perkembangan 
-          yang memerlukan observasi lebih lanjut.
+          <strong>Keunggulan Metode yang Digunakan:</strong><br>
+          Meskipun tidak menghasilkan diagnosis definitif, backward chaining berhasil mengeliminasi 
+          ${result.eliminated.length} penyakit yang tidak sesuai, sehingga mempersempit kemungkinan 
+          untuk evaluasi medis lebih lanjut.
         </div>
       </div>
       
       <div class="analysis-summary">
-        <i class="fas fa-chart-bar"></i>
-        <strong>Ringkasan Analisis:</strong> ${debugInfo.questionHistory.length} pertanyaan dianalisis, 
-        ${debugInfo.totalPositiveSymptoms} gejala positif ditemukan. Sistem telah membandingkan dengan 
-        10 penyakit pernapasan umum namun tidak menemukan pola yang cukup definitif.
+        <i class="fas fa-brain"></i>
+        <strong>Efisiensi Backward Chaining:</strong> Sistem menggunakan ${this.diagnosisSystem.questionsAsked} 
+        pertanyaan untuk mengeliminasi ${result.eliminated.length} dari ${this.diagnosisSystem.getStatus().hypotheses.length} 
+        hipotesis awal, memberikan informasi berharga untuk konsultasi medis selanjutnya.
       </div>
     `
   }
 
   resetDiagnosis() {
     this.diagnosisSystem.reset()
+    this.selectedInitialSymptoms = []
+    this.currentQuestionData = null
+
+    // Reset symptom buttons
+    this.symptomButtons.forEach((btn) => {
+      btn.classList.remove("selected")
+    })
+
     this.showScreen("welcome")
   }
 }
 
 // Initialize the application when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  new ProgressiveDiagnosisApp()
+  new BackwardChainingDiagnosisApp()
 })

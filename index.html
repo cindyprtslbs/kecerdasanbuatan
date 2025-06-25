@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Diagnosis 10 Penyakit Pernapasan</title>
+    <title>Sistem Diagnosis Backward Chaining - 10 Penyakit Pernapasan</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -14,12 +14,46 @@
             <div class="card">
                 <div class="card-header">
                     <div class="icon-container">
-                        <i class="fas fa-lungs"></i>
+                        <i class="fas fa-brain"></i>
                     </div>
-                    <h1>Diagnosis 10 Penyakit Pernapasan</h1>
-                    <p>Sistem diagnosis progresif yang menyimpan setiap jawaban dan mencocokkannya dengan 10 penyakit pernapasan umum untuk hasil yang akurat.</p>
+                    <h1>Diagnosis Backward Chaining</h1>
+                    <p>Sistem diagnosis cerdas yang menggunakan metode backward chaining - dimulai dari hipotesis penyakit dan bekerja mundur untuk mengkonfirmasi diagnosis melalui pertanyaan yang ditargetkan.</p>
                 </div>
                 <div class="card-content">
+                    <div class="methodology-info">
+                        <h3><i class="fas fa-cogs"></i> Metode Backward Chaining:</h3>
+                        <div class="method-steps">
+                            <div class="step-item">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <strong>Hipotesis Awal</strong>
+                                    <p>Sistem membuat hipotesis penyakit berdasarkan gejala kunci</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <strong>Pertanyaan Terfokus</strong>
+                                    <p>Mengajukan pertanyaan spesifik untuk mengkonfirmasi/mengeliminasi hipotesis</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <strong>Eliminasi Bertahap</strong>
+                                    <p>Mengeliminasi penyakit yang tidak sesuai dan fokus pada kandidat terkuat</p>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <strong>Konfirmasi Diagnosis</strong>
+                                    <p>Mengkonfirmasi diagnosis final dengan pertanyaan kunci</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="disease-list">
                         <h3><i class="fas fa-list-ul"></i> Penyakit yang Dapat Didiagnosis:</h3>
                         <div class="disease-grid">
@@ -67,23 +101,133 @@
                     </div>
                     
                     <div class="info-box info-primary">
-                        <i class="fas fa-brain"></i>
+                        <i class="fas fa-lightbulb"></i>
                         <div>
-                            <strong>Sistem Progresif:</strong> Setiap jawaban disimpan dan dianalisis secara kumulatif untuk mencocokkan pola gejala dengan penyakit yang tepat.
+                            <strong>Keunggulan Backward Chaining:</strong> Lebih efisien dengan pertanyaan yang ditargetkan, diagnosis lebih cepat, dan fokus pada diferensiasi antar penyakit serupa.
                         </div>
                     </div>
                     
                     <div class="info-box info-warning">
                         <i class="fas fa-exclamation-triangle"></i>
                         <div>
-                            <strong>Penting:</strong> Sistem ini untuk referensi. Jika gejala berat atau berlanjut, segera konsultasi dokter.
+                            <strong>Penting:</strong> Sistem ini untuk referensi medis. Konsultasi dokter tetap diperlukan untuk diagnosis dan pengobatan yang tepat.
                         </div>
                     </div>
                     
                     <button id="start-diagnosis" class="btn btn-primary">
                         <i class="fas fa-play"></i>
-                        Mulai Diagnosis Progresif
+                        Mulai Diagnosis Backward Chaining
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initial Symptoms Screen -->
+    <div id="initial-screen" class="screen">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <div class="icon-container">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h1>Gejala Utama</h1>
+                    <p>Pilih gejala utama yang Anda alami untuk membentuk hipotesis awal</p>
+                </div>
+                <div class="card-content">
+                    <div class="initial-symptoms">
+                        <h3>Pilih gejala yang paling mengganggu:</h3>
+                        <div class="symptom-categories">
+                            <div class="category-group">
+                                <h4><i class="fas fa-thermometer-half"></i> Demam & Sistemik</h4>
+                                <div class="symptom-options">
+                                    <button class="symptom-btn" data-symptom="fever_high" data-category="systemic">
+                                        <i class="fas fa-temperature-high"></i>
+                                        Demam Tinggi (>38.5°C)
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="body_ache" data-category="systemic">
+                                        <i class="fas fa-user-injured"></i>
+                                        Nyeri Seluruh Tubuh
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="severe_fatigue" data-category="systemic">
+                                        <i class="fas fa-bed"></i>
+                                        Kelelahan Sangat Berat
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group">
+                                <h4><i class="fas fa-nose"></i> Hidung & Sinus</h4>
+                                <div class="symptom-options">
+                                    <button class="symptom-btn" data-symptom="runny_nose" data-category="nasal">
+                                        <i class="fas fa-tint"></i>
+                                        Hidung Berair
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="nasal_congestion" data-category="nasal">
+                                        <i class="fas fa-ban"></i>
+                                        Hidung Tersumbat
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="sneezing" data-category="nasal">
+                                        <i class="fas fa-wind"></i>
+                                        Bersin-bersin
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="facial_pain" data-category="nasal">
+                                        <i class="fas fa-head-side-mask"></i>
+                                        Nyeri Wajah/Sinus
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group">
+                                <h4><i class="fas fa-lungs"></i> Pernapasan</h4>
+                                <div class="symptom-options">
+                                    <button class="symptom-btn" data-symptom="cough_dry" data-category="respiratory">
+                                        <i class="fas fa-lungs"></i>
+                                        Batuk Kering
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="cough_productive" data-category="respiratory">
+                                        <i class="fas fa-lungs-virus"></i>
+                                        Batuk Berdahak
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="shortness_breath" data-category="respiratory">
+                                        <i class="fas fa-wind"></i>
+                                        Sesak Napas
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="wheezing" data-category="respiratory">
+                                        <i class="fas fa-volume-up"></i>
+                                        Bunyi Mengi
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="category-group">
+                                <h4><i class="fas fa-throat"></i> Tenggorokan & Suara</h4>
+                                <div class="symptom-options">
+                                    <button class="symptom-btn" data-symptom="sore_throat" data-category="throat">
+                                        <i class="fas fa-throat"></i>
+                                        Sakit Tenggorokan
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="hoarse_voice" data-category="throat">
+                                        <i class="fas fa-microphone-slash"></i>
+                                        Suara Serak
+                                    </button>
+                                    <button class="symptom-btn" data-symptom="difficulty_swallowing" data-category="throat">
+                                        <i class="fas fa-utensils"></i>
+                                        Sulit Menelan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="selected-symptoms" id="selected-symptoms" style="display: none;">
+                        <h4><i class="fas fa-check-circle"></i> Gejala Terpilih:</h4>
+                        <div id="selected-list"></div>
+                        <button id="continue-diagnosis" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-arrow-right"></i>
+                            Lanjutkan Diagnosis
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,24 +246,31 @@
                         <div id="progress-fill" class="progress-fill"></div>
                     </div>
                     <div class="status-info">
-                        <div class="status-item">
-                            <i class="fas fa-database"></i>
-                            <span>Menyimpan jawaban...</span>
+                        <div class="status-item hypothesis">
+                            <i class="fas fa-bullseye"></i>
+                            <span>Hipotesis: <span id="current-hypothesis">-</span></span>
                         </div>
-                        <div class="status-item positive">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Gejala: <span id="positive-count">0</span></span>
+                        <div class="status-item eliminated">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Eliminasi: <span id="eliminated-count">0</span></span>
                         </div>
-                        <div class="status-item analysis">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Analisis: <span id="top-disease">-</span></span>
+                        <div class="status-item remaining">
+                            <i class="fas fa-list"></i>
+                            <span>Tersisa: <span id="remaining-count">10</span></span>
                         </div>
                     </div>
                 </div>
                 <div class="card-content">
+                    <div class="hypothesis-panel">
+                        <h4><i class="fas fa-microscope"></i> Hipotesis Saat Ini</h4>
+                        <div id="current-hypothesis-detail"></div>
+                    </div>
+                    
                     <div class="question-container">
                         <h2 id="current-question">Memuat pertanyaan...</h2>
+                        <div class="question-context" id="question-context"></div>
                     </div>
+                    
                     <div class="answer-buttons">
                         <button id="answer-yes" class="btn btn-success">
                             <i class="fas fa-check"></i>
@@ -131,10 +282,9 @@
                         </button>
                     </div>
                     
-                    <!-- Real-time analysis display -->
-                    <div id="analysis-panel" class="analysis-panel">
-                        <h4><i class="fas fa-microscope"></i> Analisis Real-time</h4>
-                        <div id="disease-probabilities"></div>
+                    <div id="elimination-panel" class="elimination-panel">
+                        <h4><i class="fas fa-filter"></i> Status Eliminasi</h4>
+                        <div id="disease-status"></div>
                     </div>
                 </div>
             </div>
@@ -149,7 +299,7 @@
                     <div id="result-icon" class="icon-container">
                         <!-- Icon will be inserted here -->
                     </div>
-                    <h1>Hasil Diagnosis Progresif</h1>
+                    <h1>Hasil Diagnosis Backward Chaining</h1>
                 </div>
                 <div class="card-content">
                     <div id="result-content">
