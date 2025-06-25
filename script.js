@@ -6,7 +6,7 @@ const DISEASE_KNOWLEDGE_BASE = {
     confirmingSymptoms: ["tenggorokan_gatal_ringan", "batuk_kering_ringan", "kelelahan_ringan"],
     excludingSymptoms: ["demam_tinggi_38_5", "nyeri_otot_seluruh_tubuh", "sesak_napas_istirahat"],
     differentialQuestions: [
-      "Apakah demam Anda di bawah 38°C atau tidak ada demam sama sekali?",
+      "Apakah Anda mengalami demam selama tiga hari?",
       "Apakah gejala berkembang secara bertahap dalam 1-2 hari?",
       "Apakah cairan hidung jernih dan encer seperti air?",
     ],
@@ -160,6 +160,9 @@ class BackwardChainingDiagnosisSystem {
     this.questionHistory = []
     this.questionsAsked = 0
     this.initialSymptoms = []
+    // NEW: Track questions asked per disease to prevent repetition
+    this.questionsAskedPerDisease = new Map()
+    this.askedSymptoms = new Set()
   }
 
   // Initialize hypotheses based on initial symptoms
@@ -170,6 +173,8 @@ class BackwardChainingDiagnosisSystem {
     // Score each disease based on initial symptoms
     Object.entries(DISEASE_KNOWLEDGE_BASE).forEach(([disease, config]) => {
       let score = 0
+      // Initialize question tracking for each disease
+      this.questionsAskedPerDisease.set(disease, new Set())
 
       selectedSymptoms.forEach((symptom) => {
         const mappedSymptoms = INITIAL_SYMPTOM_MAPPING[symptom] || []
@@ -201,66 +206,79 @@ class BackwardChainingDiagnosisSystem {
       this.hypotheses = Object.keys(DISEASE_KNOWLEDGE_BASE).sort(
         (a, b) => DISEASE_KNOWLEDGE_BASE[a].priority - DISEASE_KNOWLEDGE_BASE[b].priority,
       )
+      // Initialize question tracking for all diseases
+      this.hypotheses.forEach((disease) => {
+        this.questionsAskedPerDisease.set(disease, new Set())
+      })
     }
 
     this.currentHypothesis = this.hypotheses[0]
   }
 
-  // Get next question using backward chaining strategy
+  // IMPROVED: Get next question using backward chaining strategy without repetition
   getNextQuestion() {
     if (!this.currentHypothesis) {
       return null
     }
 
     const config = DISEASE_KNOWLEDGE_BASE[this.currentHypothesis]
+    const askedForThisDisease = this.questionsAskedPerDisease.get(this.currentHypothesis) || new Set()
 
-    // Strategy 1: Ask differential questions first
+    // Strategy 1: Ask differential questions first (only if not asked for this disease)
     for (const question of config.differentialQuestions) {
-      if (!this.isQuestionAsked(question)) {
+      const questionKey = `diff_${this.currentHypothesis}_${question}`
+      if (!askedForThisDisease.has(questionKey) && !this.isQuestionAsked(question)) {
         return {
           question: question,
           type: "differential",
           hypothesis: this.currentHypothesis,
           context: `Untuk mengkonfirmasi/mengeliminasi: ${this.currentHypothesis}`,
+          questionKey: questionKey,
         }
       }
     }
 
-    // Strategy 2: Ask about key symptoms
+    // Strategy 2: Ask about key symptoms (only if not asked before)
     for (const symptom of config.keySymptoms) {
-      if (!this.knownFacts.has(symptom)) {
+      if (!this.askedSymptoms.has(symptom) && !this.knownFacts.has(symptom)) {
+        const questionKey = `key_${symptom}`
         return {
           question: this.getSymptomQuestion(symptom),
           type: "key_symptom",
           symptom: symptom,
           hypothesis: this.currentHypothesis,
           context: `Gejala kunci untuk: ${this.currentHypothesis}`,
+          questionKey: questionKey,
         }
       }
     }
 
-    // Strategy 3: Ask about excluding symptoms
+    // Strategy 3: Ask about excluding symptoms (only if not asked before)
     for (const symptom of config.excludingSymptoms) {
-      if (!this.knownFacts.has(symptom)) {
+      if (!this.askedSymptoms.has(symptom) && !this.knownFacts.has(symptom)) {
+        const questionKey = `excl_${symptom}`
         return {
           question: this.getSymptomQuestion(symptom),
           type: "excluding_symptom",
           symptom: symptom,
           hypothesis: this.currentHypothesis,
           context: `Untuk mengeliminasi: ${this.currentHypothesis}`,
+          questionKey: questionKey,
         }
       }
     }
 
-    // Strategy 4: Ask about confirming symptoms
+    // Strategy 4: Ask about confirming symptoms (only if not asked before)
     for (const symptom of config.confirmingSymptoms) {
-      if (!this.knownFacts.has(symptom)) {
+      if (!this.askedSymptoms.has(symptom) && !this.knownFacts.has(symptom)) {
+        const questionKey = `conf_${symptom}`
         return {
           question: this.getSymptomQuestion(symptom),
           type: "confirming_symptom",
           symptom: symptom,
           hypothesis: this.currentHypothesis,
           context: `Gejala pendukung untuk: ${this.currentHypothesis}`,
+          questionKey: questionKey,
         }
       }
     }
@@ -268,12 +286,230 @@ class BackwardChainingDiagnosisSystem {
     return null
   }
 
-  // Check if a question has been asked
+  // Check if a question has been asked globally
   isQuestionAsked(question) {
     return this.questionHistory.some((q) => q.question === question)
   }
 
-  // Get symptom question from knowledge base
+  // IMPROVED: Process answer and update knowledge base with better tracking
+  processAnswer(question, answer, questionData) {
+    this.questionsAsked++
+
+    // Record the answer
+    this.questionHistory.push({
+      question: question,
+      answer: answer,
+      type: questionData.type,
+      hypothesis: questionData.hypothesis,
+      timestamp: Date.now(),
+    })
+
+    // Track that this question was asked for this disease
+    if (questionData.questionKey) {
+      const askedForThisDisease = this.questionsAskedPerDisease.get(questionData.hypothesis) || new Set()
+      askedForThisDisease.add(questionData.questionKey)
+      this.questionsAskedPerDisease.set(questionData.hypothesis, askedForThisDisease)
+    }
+
+    // Update known facts if it's a symptom question
+    if (questionData.symptom) {
+      this.knownFacts.set(questionData.symptom, answer)
+      this.askedSymptoms.add(questionData.symptom)
+    }
+
+    // Evaluate current hypothesis
+    this.evaluateCurrentHypothesis()
+
+    // Move to next hypothesis if current one is eliminated or confirmed
+    if (this.eliminatedDiseases.has(this.currentHypothesis) || this.confirmedDiseases.has(this.currentHypothesis)) {
+      this.moveToNextHypothesis()
+    }
+  }
+
+  // IMPROVED: Better evaluation with more precise criteria
+  evaluateCurrentHypothesis() {
+    if (!this.currentHypothesis) return
+
+    const config = DISEASE_KNOWLEDGE_BASE[this.currentHypothesis]
+    let keySymptomMatches = 0
+    let keySymptomTotal = 0
+    let excludingSymptomPresent = false
+    let confirmingSymptomMatches = 0
+    let confirmingSymptomTotal = 0
+
+    // Check key symptoms
+    config.keySymptoms.forEach((symptom) => {
+      if (this.knownFacts.has(symptom)) {
+        keySymptomTotal++
+        if (this.knownFacts.get(symptom)) {
+          keySymptomMatches++
+        }
+      }
+    })
+
+    // Check excluding symptoms
+    config.excludingSymptoms.forEach((symptom) => {
+      if (this.knownFacts.has(symptom) && this.knownFacts.get(symptom)) {
+        excludingSymptomPresent = true
+      }
+    })
+
+    // Check confirming symptoms
+    config.confirmingSymptoms.forEach((symptom) => {
+      if (this.knownFacts.has(symptom)) {
+        confirmingSymptomTotal++
+        if (this.knownFacts.get(symptom)) {
+          confirmingSymptomMatches++
+        }
+      }
+    })
+
+    // Immediate elimination if excluding symptoms are present
+    if (excludingSymptomPresent) {
+      this.eliminatedDiseases.add(this.currentHypothesis)
+      return
+    }
+
+    // More sophisticated evaluation
+    const minKeySymptoms = Math.min(2, config.keySymptoms.length)
+    const minKeySymptomRatio = 0.6
+
+    // If we have enough information about key symptoms
+    if (keySymptomTotal >= minKeySymptoms) {
+      const keySymptomRatio = keySymptomMatches / keySymptomTotal
+
+      // Eliminate if key symptom ratio is too low
+      if (keySymptomRatio < 0.3 && keySymptomMatches < 2) {
+        this.eliminatedDiseases.add(this.currentHypothesis)
+        return
+      }
+
+      // Confirm if we have strong evidence
+      if (keySymptomMatches >= minKeySymptoms && keySymptomRatio >= minKeySymptomRatio) {
+        // Additional check with confirming symptoms if available
+        if (confirmingSymptomTotal > 0) {
+          const confirmingRatio = confirmingSymptomMatches / confirmingSymptomTotal
+          if (confirmingRatio >= 0.4 || confirmingSymptomMatches >= 1) {
+            this.confirmedDiseases.add(this.currentHypothesis)
+          }
+        } else {
+          // Confirm based on key symptoms alone if no confirming symptoms asked
+          this.confirmedDiseases.add(this.currentHypothesis)
+        }
+      }
+    }
+
+    // Special case: if we've asked many questions for this disease without confirmation
+    const askedForThisDisease = this.questionsAskedPerDisease.get(this.currentHypothesis) || new Set()
+    const maxQuestionsPerDisease = 6
+
+    if (
+      askedForThisDisease.size >= maxQuestionsPerDisease &&
+      !this.confirmedDiseases.has(this.currentHypothesis) &&
+      keySymptomMatches < minKeySymptoms
+    ) {
+      this.eliminatedDiseases.add(this.currentHypothesis)
+    }
+  }
+
+  // Move to next hypothesis
+  moveToNextHypothesis() {
+    const remainingHypotheses = this.hypotheses.filter(
+      (h) => !this.eliminatedDiseases.has(h) && !this.confirmedDiseases.has(h),
+    )
+
+    this.currentHypothesis = remainingHypotheses.length > 0 ? remainingHypotheses[0] : null
+  }
+
+  // IMPROVED: Better continuation logic
+  shouldContinue() {
+    // Stop if we have a confirmed diagnosis
+    if (this.confirmedDiseases.size > 0) {
+      return false
+    }
+
+    // Stop if no more hypotheses to test
+    if (!this.currentHypothesis) {
+      return false
+    }
+
+    // Stop if we've asked too many questions globally
+    if (this.questionsAsked >= 20) {
+      return false
+    }
+
+    // Stop if current hypothesis has no more questions to ask
+    const nextQuestion = this.getNextQuestion()
+    if (!nextQuestion) {
+      // Try to move to next hypothesis
+      this.moveToNextHypothesis()
+      if (!this.currentHypothesis) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  // Get diagnosis result
+  getDiagnosisResult() {
+    if (this.confirmedDiseases.size > 0) {
+      return {
+        type: "confirmed",
+        disease: Array.from(this.confirmedDiseases)[0],
+        confidence: "high",
+      }
+    }
+
+    // If no confirmed diagnosis, return the most likely remaining hypothesis
+    const remainingHypotheses = this.hypotheses.filter((h) => !this.eliminatedDiseases.has(h))
+
+    if (remainingHypotheses.length > 0) {
+      return {
+        type: "probable",
+        disease: remainingHypotheses[0],
+        confidence: "moderate",
+        alternatives: remainingHypotheses.slice(1, 3),
+      }
+    }
+
+    return {
+      type: "inconclusive",
+      eliminated: Array.from(this.eliminatedDiseases),
+    }
+  }
+
+  // Get current status
+  getStatus() {
+    return {
+      currentHypothesis: this.currentHypothesis,
+      eliminatedCount: this.eliminatedDiseases.size,
+      remainingCount: this.hypotheses.length - this.eliminatedDiseases.size - this.confirmedDiseases.size,
+      questionsAsked: this.questionsAsked,
+      hypotheses: this.hypotheses,
+      eliminated: Array.from(this.eliminatedDiseases),
+      confirmed: Array.from(this.confirmedDiseases),
+      questionsPerDisease: Object.fromEntries(
+        Array.from(this.questionsAskedPerDisease.entries()).map(([disease, questions]) => [disease, questions.size]),
+      ),
+    }
+  }
+
+  // IMPROVED: Reset system with better cleanup
+  reset() {
+    this.knownFacts.clear()
+    this.hypotheses = []
+    this.eliminatedDiseases.clear()
+    this.confirmedDiseases.clear()
+    this.currentHypothesis = null
+    this.questionHistory = []
+    this.questionsAsked = 0
+    this.initialSymptoms = []
+    this.questionsAskedPerDisease.clear()
+    this.askedSymptoms.clear()
+  }
+
+  // Get symptom question from knowledge base (same as before)
   getSymptomQuestion(symptom) {
     const symptomQuestions = {
       // Fever and systemic symptoms
@@ -334,174 +570,6 @@ class BackwardChainingDiagnosisSystem {
     }
 
     return symptomQuestions[symptom] || `Apakah Anda mengalami gejala: ${symptom}?`
-  }
-
-  // Process answer and update knowledge base
-  processAnswer(question, answer, questionData) {
-    this.questionsAsked++
-
-    // Record the answer
-    this.questionHistory.push({
-      question: question,
-      answer: answer,
-      type: questionData.type,
-      hypothesis: questionData.hypothesis,
-      timestamp: Date.now(),
-    })
-
-    // Update known facts if it's a symptom question
-    if (questionData.symptom) {
-      this.knownFacts.set(questionData.symptom, answer)
-    }
-
-    // Evaluate current hypothesis
-    this.evaluateCurrentHypothesis()
-
-    // Move to next hypothesis if current one is eliminated or confirmed
-    if (this.eliminatedDiseases.has(this.currentHypothesis) || this.confirmedDiseases.has(this.currentHypothesis)) {
-      this.moveToNextHypothesis()
-    }
-  }
-
-  // Evaluate current hypothesis based on known facts
-  evaluateCurrentHypothesis() {
-    if (!this.currentHypothesis) return
-
-    const config = DISEASE_KNOWLEDGE_BASE[this.currentHypothesis]
-    let keySymptomMatches = 0
-    let keySymptomTotal = 0
-    let excludingSymptomPresent = false
-
-    // Check key symptoms
-    config.keySymptoms.forEach((symptom) => {
-      if (this.knownFacts.has(symptom)) {
-        keySymptomTotal++
-        if (this.knownFacts.get(symptom)) {
-          keySymptomMatches++
-        }
-      }
-    })
-
-    // Check excluding symptoms
-    config.excludingSymptoms.forEach((symptom) => {
-      if (this.knownFacts.has(symptom) && this.knownFacts.get(symptom)) {
-        excludingSymptomPresent = true
-      }
-    })
-
-    // Elimination criteria
-    if (excludingSymptomPresent) {
-      this.eliminatedDiseases.add(this.currentHypothesis)
-      return
-    }
-
-    // If we have enough information about key symptoms
-    if (keySymptomTotal >= Math.min(3, config.keySymptoms.length)) {
-      const keySymptomRatio = keySymptomMatches / keySymptomTotal
-
-      if (keySymptomRatio < 0.3) {
-        this.eliminatedDiseases.add(this.currentHypothesis)
-      } else if (keySymptomRatio >= 0.7 && keySymptomMatches >= 2) {
-        // Additional confirmation for high-confidence diagnosis
-        let confirmingMatches = 0
-        let confirmingTotal = 0
-
-        config.confirmingSymptoms.forEach((symptom) => {
-          if (this.knownFacts.has(symptom)) {
-            confirmingTotal++
-            if (this.knownFacts.get(symptom)) {
-              confirmingMatches++
-            }
-          }
-        })
-
-        if (confirmingTotal === 0 || confirmingMatches / confirmingTotal >= 0.5) {
-          this.confirmedDiseases.add(this.currentHypothesis)
-        }
-      }
-    }
-  }
-
-  // Move to next hypothesis
-  moveToNextHypothesis() {
-    const remainingHypotheses = this.hypotheses.filter(
-      (h) => !this.eliminatedDiseases.has(h) && !this.confirmedDiseases.has(h),
-    )
-
-    this.currentHypothesis = remainingHypotheses.length > 0 ? remainingHypotheses[0] : null
-  }
-
-  // Check if diagnosis should continue
-  shouldContinue() {
-    // Stop if we have a confirmed diagnosis
-    if (this.confirmedDiseases.size > 0) {
-      return false
-    }
-
-    // Stop if no more hypotheses to test
-    if (!this.currentHypothesis) {
-      return false
-    }
-
-    // Stop if we've asked too many questions
-    if (this.questionsAsked >= 15) {
-      return false
-    }
-
-    return true
-  }
-
-  // Get diagnosis result
-  getDiagnosisResult() {
-    if (this.confirmedDiseases.size > 0) {
-      return {
-        type: "confirmed",
-        disease: Array.from(this.confirmedDiseases)[0],
-        confidence: "high",
-      }
-    }
-
-    // If no confirmed diagnosis, return the most likely remaining hypothesis
-    const remainingHypotheses = this.hypotheses.filter((h) => !this.eliminatedDiseases.has(h))
-
-    if (remainingHypotheses.length > 0) {
-      return {
-        type: "probable",
-        disease: remainingHypotheses[0],
-        confidence: "moderate",
-        alternatives: remainingHypotheses.slice(1, 3),
-      }
-    }
-
-    return {
-      type: "inconclusive",
-      eliminated: Array.from(this.eliminatedDiseases),
-    }
-  }
-
-  // Get current status
-  getStatus() {
-    return {
-      currentHypothesis: this.currentHypothesis,
-      eliminatedCount: this.eliminatedDiseases.size,
-      remainingCount: this.hypotheses.length - this.eliminatedDiseases.size - this.confirmedDiseases.size,
-      questionsAsked: this.questionsAsked,
-      hypotheses: this.hypotheses,
-      eliminated: Array.from(this.eliminatedDiseases),
-      confirmed: Array.from(this.confirmedDiseases),
-    }
-  }
-
-  // Reset system
-  reset() {
-    this.knownFacts.clear()
-    this.hypotheses = []
-    this.eliminatedDiseases.clear()
-    this.confirmedDiseases.clear()
-    this.currentHypothesis = null
-    this.questionHistory = []
-    this.questionsAsked = 0
-    this.initialSymptoms = []
   }
 }
 
